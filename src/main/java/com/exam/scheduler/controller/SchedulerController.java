@@ -8,11 +8,15 @@ import com.exam.scheduler.util.ExcelExporter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/schedule")
@@ -33,34 +37,82 @@ public class SchedulerController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam String scheduleName) {
         
+        if (endDate.isBefore(startDate)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "End date cannot be before start date");
+        }
+        
         ExamSchedule schedule = schedulerService.generateExamSchedule(startDate, endDate, scheduleName);
         return ResponseEntity.ok(schedule);
     }
     
     @GetMapping("/{id}")
     public ResponseEntity<ExamSchedule> getSchedule(@PathVariable Long id) {
-        // Implement method to get schedule by ID
-        return ResponseEntity.ok(null);
+        try {
+            ExamSchedule schedule = schedulerService.getScheduleById(id);
+            if (schedule == null) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Schedule not found with id: " + id);
+            }
+            return ResponseEntity.ok(schedule);
+        } catch (Exception e) {
+            if (e instanceof ResponseStatusException) {
+                throw e;
+            }
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error retrieving schedule: " + e.getMessage());
+        }
     }
     
     @GetMapping("/{id}/export")
     public ResponseEntity<byte[]> exportSchedule(@PathVariable Long id) {
-        // Implement export functionality
-        byte[] excelBytes = excelExporter.exportScheduleToExcel(id);
-        
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        headers.setContentDispositionFormData("attachment", "exam_schedule.xlsx");
-        
-        return ResponseEntity.ok()
-                .headers(headers)
-                .body(excelBytes);
+        try {
+            // First check if schedule exists
+            ExamSchedule schedule = schedulerService.getScheduleById(id);
+            if (schedule == null) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Schedule not found with id: " + id);
+            }
+            
+            byte[] excelBytes = excelExporter.exportScheduleToExcel(id);
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            String filename = "exam_schedule_" + schedule.getName().replaceAll("\\s+", "_") + ".xlsx";
+            headers.setContentDispositionFormData("attachment", filename);
+            
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(excelBytes);
+        } catch (Exception e) {
+            if (e instanceof ResponseStatusException) {
+                throw e;
+            }
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error exporting schedule: " + e.getMessage());
+        }
     }
     
     @PostMapping("/{id}/email")
-    public ResponseEntity<String> emailSchedule(@PathVariable Long id) {
-        // Implement email sending functionality
-        emailService.sendScheduleEmails(id);
-        return ResponseEntity.ok("Schedule emails sent successfully");
+    public ResponseEntity<Map<String, Object>> emailSchedule(@PathVariable Long id) {
+        try {
+            // First check if schedule exists
+            ExamSchedule schedule = schedulerService.getScheduleById(id);
+            if (schedule == null) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Schedule not found with id: " + id);
+            }
+            
+            int emailsSent = emailService.sendScheduleEmails(id);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Schedule emails sent successfully");
+            response.put("scheduleName", schedule.getName());
+            response.put("emailsSent", emailsSent);
+            response.put("scheduleId", id);
+            response.put("timestamp", LocalDate.now());
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            if (e instanceof ResponseStatusException) {
+                throw e;
+            }
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error sending emails: " + e.getMessage());
+        }
     }
 }

@@ -95,6 +95,16 @@ public class SchedulerService {
         return examScheduleRepository.save(schedule);
     }
     
+    /**
+     * Retrieves an exam schedule by its ID
+     * 
+     * @param id the schedule ID
+     * @return the exam schedule, or null if not found
+     */
+    public ExamSchedule getScheduleById(Long id) {
+        return examScheduleRepository.findById(id).orElse(null);
+    }
+    
     private int calculateRequiredSlots(int totalStudents) {
         int fullSlots = totalStudents / MAX_STUDENTS_PER_SLOT;
         int remainingStudents = totalStudents % MAX_STUDENTS_PER_SLOT;

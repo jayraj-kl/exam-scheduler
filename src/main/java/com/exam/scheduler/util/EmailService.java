@@ -34,7 +34,13 @@ public class EmailService {
     @Autowired
     private ExamScheduleRepository scheduleRepository;
     
-    public void sendScheduleEmails(Long scheduleId) {
+    /**
+     * Sends emails with the exam schedule to relevant parties
+     * 
+     * @param scheduleId the ID of the schedule to send
+     * @return the number of emails successfully sent
+     */
+    public int sendScheduleEmails(Long scheduleId) {
         ExamSchedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new RuntimeException("Schedule not found"));
         
@@ -54,13 +60,23 @@ public class EmailService {
             }
         }
         
+        int emailCount = 0;
+        
         // Send email to each faculty
         for (Map.Entry<Faculty, List<ExamSlot>> entry : facultySlots.entrySet()) {
             Faculty faculty = entry.getKey();
             List<ExamSlot> slots = entry.getValue();
             
-            sendEmailToFaculty(faculty, slots, schedule);
+            try {
+                sendEmailToFaculty(faculty, slots, schedule);
+                emailCount++;
+            } catch (RuntimeException e) {
+                // Log the error but continue with other emails
+                System.err.println("Failed to send email to " + faculty.getName() + ": " + e.getMessage());
+            }
         }
+        
+        return emailCount;
     }
     
     private void sendEmailToFaculty(Faculty faculty, List<ExamSlot> slots, ExamSchedule schedule) {
