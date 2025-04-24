@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -39,8 +40,21 @@ public class SchedulerService {
     @Autowired
     private ExamScheduleRepository examScheduleRepository;
     
+    @Autowired
+    private ProgramRepository programRepository;
+    
+    public List<ExamSchedule> getAllSchedules() {
+        return examScheduleRepository.findAll();
+    }
+    
     @Transactional
     public ExamSchedule generateExamSchedule(LocalDate startDate, LocalDate endDate, String scheduleName) {
+        return generateExamSchedule(startDate, endDate, scheduleName, null, false);
+    }
+    
+    @Transactional
+    public ExamSchedule generateExamSchedule(LocalDate startDate, LocalDate endDate, String scheduleName, 
+                                            List<String> programIds, Boolean includeWeekends) {
         ExamSchedule schedule = new ExamSchedule();
         schedule.setName(scheduleName);
         schedule.setStartDate(startDate);
@@ -48,7 +62,27 @@ public class SchedulerService {
         schedule.setExamSlots(new ArrayList<>());
         
         // Get all subjects that need to be scheduled
-        List<Subject> subjects = subjectRepository.findAll();
+        List<Subject> subjects;
+        
+        // Filter subjects by program if programIds are provided
+        if (programIds != null && !programIds.isEmpty()) {
+            subjects = subjectRepository.findByProgramIdIn(
+                programIds.stream()
+                    .map(id -> {
+                        try {
+                            return Long.parseLong(id);
+                        } catch (NumberFormatException e) {
+                            // Handle non-numeric IDs (e.g., "cs", "it")
+                            Program program = programRepository.findByCode(id);
+                            return program != null ? program.getId() : null;
+                        }
+                    })
+                    .filter(id -> id != null)
+                    .collect(Collectors.toList())
+            );
+        } else {
+            subjects = subjectRepository.findAll();
+        }
         
         // Sort subjects by total students (descending) to prioritize larger groups
         subjects.sort(Comparator.comparing(Subject::getTotalStudents).reversed());
@@ -61,6 +95,19 @@ public class SchedulerService {
             int requiredSlots = calculateRequiredSlots(totalStudents);
             
             for (int i = 0; i < requiredSlots; i++) {
+                // Skip weekends if not included
+                if (!includeWeekends) {
+                    while (currentDate.getDayOfWeek() == DayOfWeek.SATURDAY || 
+                           currentDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
+                        currentDate = currentDate.plusDays(1);
+                        
+                        // If we've passed the end date, circle back to start date
+                        if (currentDate.isAfter(endDate)) {
+                            currentDate = startDate;
+                        }
+                    }
+                }
+                
                 // Create exam slot
                 ExamSlot slot = createExamSlot(subject, currentDate, isMorningSlot, i, requiredSlots);
                 
@@ -93,16 +140,6 @@ public class SchedulerService {
         }
         
         return examScheduleRepository.save(schedule);
-    }
-    
-    /**
-     * Retrieves an exam schedule by its ID
-     * 
-     * @param id the schedule ID
-     * @return the exam schedule, or null if not found
-     */
-    public ExamSchedule getScheduleById(Long id) {
-        return examScheduleRepository.findById(id).orElse(null);
     }
     
     private int calculateRequiredSlots(int totalStudents) {
@@ -171,35 +208,60 @@ public class SchedulerService {
             slot.setSlotType(ExamSlot.SlotType.MIXED);
         }
         
+        // Initialize invigilators list
+        if (slot.getInvigilators() == null) {
+            slot.setInvigilators(new ArrayList<>());
+        }
+        
         return slot;
     }
     
-    private void allocateRoom(ExamSlot slot) {
-        // Find a suitable room based on student count
-        List<Room> availableRooms = roomRepository.findAvailableRoomsWithCapacity(slot.getStudentCount());
+    @Transactional
+    public void allocateRoom(ExamSlot slot) {
+        // Find available rooms with sufficient capacity for this specific time slot
+        List<Room> availableRooms = roomRepository.findAvailableRoomsWithCapacity(
+            slot.getStudentCount(),
+            slot.getExamDate(),
+            slot.isMorningSlot()
+        );
         
+        Room selectedRoom = null;
         if (!availableRooms.isEmpty()) {
             // Find the room with capacity closest to required
-            Room selectedRoom = availableRooms.stream()
+            selectedRoom = availableRooms.stream()
                     .min(Comparator.comparingInt(room -> 
                         Math.abs(room.getSeatingCapacity() - slot.getStudentCount())))
                     .orElse(availableRooms.get(0));
-            
+        }
+
+        if (selectedRoom != null) {
+            // Set the new room
             slot.setRoom(selectedRoom);
-            selectedRoom.setCurrentBooking(slot);
-            selectedRoom.setIsAvailable(false);
+            if (selectedRoom.getExamSlots() == null) {
+                selectedRoom.setExamSlots(new ArrayList<>());
+            }
+            selectedRoom.getExamSlots().add(slot);
             roomRepository.save(selectedRoom);
         } else {
-            throw new RuntimeException("No suitable room available for slot with " + slot.getStudentCount() + " students");
+            throw new RuntimeException("No suitable room available for slot with " + slot.getStudentCount() + 
+                " students on " + slot.getExamDate() + " " + 
+                (slot.isMorningSlot() ? "morning" : "afternoon"));
         }
     }
     
-    private void assignFaculty(ExamSlot slot) {
-        // Convert slot time to LocalDateTime for availability check
+    @Transactional
+    public void assignFaculty(ExamSlot slot) {
         LocalDateTime slotDateTime = LocalDateTime.of(slot.getExamDate(), slot.getStartTime());
         
-        // Find available faculty with lowest workload
-        List<Faculty> availableFaculties = facultyRepository.findAvailableFacultiesForSlot(slotDateTime);
+        // First try to find faculty available specifically for this time slot
+        List<Faculty> availableFaculties = facultyRepository.findAvailableFacultiesForTimeSlot(
+            slot.getExamDate(), slot.getStartTime(), slot.getEndTime());
+        
+        if (availableFaculties.isEmpty()) {
+            // Fallback to finding faculty who might be available (no conflicting assignments)
+            availableFaculties = facultyRepository.findAvailableFacultiesForSlot(
+                slotDateTime, slot.getExamDate(), slot.getStartTime());
+        }
         
         if (!availableFaculties.isEmpty()) {
             Faculty selectedFaculty = availableFaculties.get(0);
@@ -207,42 +269,236 @@ public class SchedulerService {
             
             // Update faculty workload
             selectedFaculty.setCurrentWorkload(selectedFaculty.getCurrentWorkload() + 1);
-            selectedFaculty.getAssignedSlots().add(slot);
             facultyRepository.save(selectedFaculty);
         } else {
-            throw new RuntimeException("No available faculty for slot on " + slot.getExamDate() + " at " + slot.getStartTime());
+            // If still no faculty available, try to find anyone under their workload capacity
+            List<Faculty> anyFaculty = facultyRepository.findAvailableFacultiesOrderByWorkload();
+            if (!anyFaculty.isEmpty()) {
+                Faculty selectedFaculty = anyFaculty.get(0);
+                
+                // Double check this faculty doesn't have a direct time conflict
+                boolean hasConflict = selectedFaculty.getAssignedSlots().stream()
+                    .anyMatch(s -> s.getExamDate().equals(slot.getExamDate()) &&
+                             ((s.getStartTime().equals(slot.getStartTime()) || 
+                               (s.getStartTime().isBefore(slot.getEndTime()) && 
+                                s.getEndTime().isAfter(slot.getStartTime())))));
+                
+                if (!hasConflict) {
+                    slot.setFaculty(selectedFaculty);
+                    selectedFaculty.setCurrentWorkload(selectedFaculty.getCurrentWorkload() + 1);
+                    facultyRepository.save(selectedFaculty);
+                    return;
+                }
+            }
+            
+            throw new RuntimeException("No available faculty for slot on " + slot.getExamDate() + 
+                " at " + slot.getStartTime() + ". Please check faculty workload capacities and availability.");
         }
     }
     
-    private void assignInvigilators(ExamSlot slot) {
+    @Transactional
+    public void assignInvigilators(ExamSlot slot) {
         // Assign exam head
         List<Faculty> examHeads = facultyRepository.findByIsExamHeadTrue();
+        if (examHeads.isEmpty()) {
+            throw new RuntimeException("No exam heads available in the system");
+        }
+        
+        // Sort by workload to distribute evenly
         examHeads.sort(Comparator.comparing(Faculty::getCurrentWorkload));
         
-        if (!examHeads.isEmpty()) {
-            Faculty examHead = examHeads.get(0);
-            slot.setExamHead(examHead);
-            
-            // Update exam head workload
-            examHead.setCurrentWorkload(examHead.getCurrentWorkload() + 1);
-            facultyRepository.save(examHead);
-        }
+        Faculty examHead = examHeads.get(0);
+        slot.setExamHead(examHead);
+        
+        // Update exam head workload
+        examHead.setCurrentWorkload(examHead.getCurrentWorkload() + 1);
+        facultyRepository.save(examHead);
         
         // Assign invigilators based on student count
-        int requiredInvigilators = Math.max(1, slot.getStudentCount() / 20); // 1 invigilator per 20 students
+        // Rule: 1 invigilator for every 20 students, minimum 1
+        int requiredInvigilators = Math.max(1, slot.getStudentCount() / 20);
         List<Faculty> invigilators = facultyRepository.findByIsInvigilatorTrue();
-        invigilators.sort(Comparator.comparing(Faculty::getCurrentWorkload));
         
-        List<Faculty> selectedInvigilators = new ArrayList<>();
-        for (int i = 0; i < Math.min(requiredInvigilators, invigilators.size()); i++) {
-            Faculty invigilator = invigilators.get(i);
-            selectedInvigilators.add(invigilator);
-            
-            // Update invigilator workload
-            invigilator.setCurrentWorkload(invigilator.getCurrentWorkload() + 1);
-            facultyRepository.save(invigilator);
+        if (invigilators.isEmpty()) {
+            throw new RuntimeException("No invigilators available in the system");
         }
         
-        slot.setInvigilators(selectedInvigilators);
+        // Sort by current workload to distribute evenly
+        invigilators.sort(Comparator.comparing(Faculty::getCurrentWorkload));
+        
+        // Remove the exam head from potential invigilators to avoid duplication
+        invigilators.removeIf(f -> f.getId().equals(examHead.getId()));
+        
+        // Get the faculty assigned to this slot to avoid duplication
+        if (slot.getFaculty() != null) {
+            invigilators.removeIf(f -> f.getId().equals(slot.getFaculty().getId()));
+        }
+        
+        // Create a set of invigilator IDs already assigned to this slot
+        List<Long> existingInvigilatorIds = slot.getInvigilators().stream()
+            .map(Faculty::getId)
+            .collect(Collectors.toList());
+            
+        // Remove invigilators already assigned to this slot
+        invigilators.removeIf(f -> existingInvigilatorIds.contains(f.getId()));
+        
+        // Add required number of invigilators only if not already assigned
+        for (int i = 0; i < Math.min(requiredInvigilators, invigilators.size()); i++) {
+            Faculty invigilator = invigilators.get(i);
+            
+            // Check if invigilator is already in the list (extra safety check)
+            boolean alreadyAssigned = slot.getInvigilators().stream()
+                .anyMatch(inv -> inv.getId().equals(invigilator.getId()));
+                
+            if (!alreadyAssigned) {
+                slot.getInvigilators().add(invigilator);
+                
+                // Update invigilator workload
+                invigilator.setCurrentWorkload(invigilator.getCurrentWorkload() + 1);
+                facultyRepository.save(invigilator);
+            }
+        }
+    }
+    
+    @Transactional
+    public int allocateResourcesForSchedule(Long scheduleId) {
+        ExamSchedule schedule = getScheduleById(scheduleId);
+        int slotsUpdated = 0;
+        
+        for (ExamSlot slot : schedule.getExamSlots()) {
+            try {
+                // Skip slots that already have all resources allocated
+                if (slot.getRoom() != null && slot.getFaculty() != null && 
+                    slot.getExamHead() != null && !slot.getInvigilators().isEmpty()) {
+                    continue;
+                }
+                
+                // Allocate resources for this slot
+                if (slot.getRoom() == null) {
+                    allocateRoom(slot);
+                }
+                
+                if (slot.getFaculty() == null) {
+                    assignFaculty(slot);
+                }
+                
+                if (slot.getExamHead() == null || slot.getInvigilators().isEmpty()) {
+                    assignInvigilators(slot);
+                }
+                
+                examSlotRepository.save(slot);
+                slotsUpdated++;
+            } catch (Exception e) {
+                // Log the error but continue with other slots
+                System.err.println("Error allocating resources for slot " + slot.getId() + ": " + e.getMessage());
+            }
+        }
+        
+        return slotsUpdated;
+    }
+
+    @Transactional
+    public int allocateResourcesForSchedule(Long scheduleId, boolean assignRoom, boolean assignFaculty, boolean assignInvigilators) {
+        ExamSchedule schedule = getScheduleById(scheduleId);
+        int slotsUpdated = 0;
+        
+        for (ExamSlot slot : schedule.getExamSlots()) {
+            try {
+                boolean updated = false;
+                
+                // Allocate resources for this slot based on parameters
+                if (assignRoom && slot.getRoom() == null) {
+                    allocateRoom(slot);
+                    updated = true;
+                }
+                
+                if (assignFaculty && slot.getFaculty() == null) {
+                    assignFaculty(slot);
+                    updated = true;
+                }
+                
+                if (assignInvigilators && (slot.getExamHead() == null || slot.getInvigilators().isEmpty())) {
+                    assignInvigilators(slot);
+                    updated = true;
+                }
+                
+                if (updated) {
+                    examSlotRepository.save(slot);
+                    slotsUpdated++;
+                }
+            } catch (Exception e) {
+                // Log the error but continue with other slots
+                System.err.println("Error allocating resources for slot " + slot.getId() + ": " + e.getMessage());
+            }
+        }
+        
+        return slotsUpdated;
+    }
+    
+    @Transactional
+    public void addFacultyAvailability(Faculty faculty, LocalDate date, LocalTime startTime, LocalTime endTime) {
+        // Check if faculty exists
+        if (faculty == null || faculty.getId() == null) {
+            throw new RuntimeException("Invalid faculty");
+        }
+        
+        // Add availability slots to faculty
+        List<LocalDateTime> availabilitySlots = new ArrayList<>();
+        
+        // Generate a slot for each hour within the range
+        LocalDateTime currentSlot = LocalDateTime.of(date, startTime);
+        LocalDateTime endDateTime = LocalDateTime.of(date, endTime);
+        
+        while (currentSlot.isBefore(endDateTime)) {
+            availabilitySlots.add(currentSlot);
+            currentSlot = currentSlot.plusHours(1);
+        }
+        
+        // If the faculty's availability slots list is null, initialize it
+        if (faculty.getAvailabilitySlots() == null) {
+            faculty.setAvailabilitySlots(new ArrayList<>());
+        }
+        
+        // Add all new slots
+        faculty.getAvailabilitySlots().addAll(availabilitySlots);
+        
+        // Update the faculty
+        facultyRepository.save(faculty);
+    }
+    
+    // Method to reassign faculty if they become unavailable
+    @Transactional
+    public Faculty reassignFacultyForSlot(ExamSlot slot, Faculty oldFaculty) {
+        // Convert slot time to LocalDateTime for availability check
+        LocalDateTime slotDateTime = LocalDateTime.of(slot.getExamDate(), slot.getStartTime());
+        
+        // Find available faculty with lowest workload, excluding the old faculty
+        List<Faculty> availableFaculties = facultyRepository.findAvailableFacultiesForSlot(
+            slotDateTime,
+            slot.getExamDate(),
+            slot.getStartTime()
+        );
+        availableFaculties.removeIf(f -> f.getId().equals(oldFaculty.getId()));
+        
+        if (!availableFaculties.isEmpty()) {
+            Faculty newFaculty = availableFaculties.get(0);
+            
+            // Update old faculty workload
+            oldFaculty.setCurrentWorkload(Math.max(0, oldFaculty.getCurrentWorkload() - 1));
+            facultyRepository.save(oldFaculty);
+            
+            // Update new faculty workload
+            newFaculty.setCurrentWorkload(newFaculty.getCurrentWorkload() + 1);
+            facultyRepository.save(newFaculty);
+            
+            return newFaculty;
+        }
+        
+        throw new RuntimeException("No available faculty for reassignment for slot on " + slot.getExamDate() + " at " + slot.getStartTime());
+    }
+
+    public ExamSchedule getScheduleById(Long id) {
+        return examScheduleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Schedule not found with id: " + id));
     }
 }

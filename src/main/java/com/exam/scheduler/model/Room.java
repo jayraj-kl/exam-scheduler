@@ -1,10 +1,11 @@
 package com.exam.scheduler.model;
 
-
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.List;
 
 @Entity
 @Data
@@ -16,13 +17,17 @@ public class Room {
     private Long id;
     
     private String roomNumber;
+    private String building;
+    private String floor;
     private int seatingCapacity;
+    private String roomType;
     private boolean isAvailable;
 
     public void setIsAvailable(boolean isAvailable) {
         this.isAvailable = isAvailable;
     }    
     
-    @OneToOne(mappedBy = "room")
-    private ExamSlot currentBooking;
+    @OneToMany(mappedBy = "room")
+    @JsonIgnore
+    private List<ExamSlot> examSlots;
 }

@@ -47,7 +47,7 @@ pageEncoding="UTF-8"%> <%@ include file="layout/header.jsp" %>
   </div>
   <div class="card-body p-0">
     <div class="table-responsive">
-      <table class="table table-hover mb-0">
+      <table class="table table-hover mb-0" id="examsTable">
         <thead class="table-light">
           <tr>
             <th scope="col">#</th>
@@ -60,49 +60,7 @@ pageEncoding="UTF-8"%> <%@ include file="layout/header.jsp" %>
           </tr>
         </thead>
         <tbody>
-          <!-- Sample data, would be replaced with actual data from backend -->
-          <tr>
-            <td>1</td>
-            <td>Midterm Examination</td>
-            <td>Mathematics</td>
-            <td>2023-05-15</td>
-            <td>120 minutes</td>
-            <td><span class="badge bg-success">Scheduled</span></td>
-            <td>
-              <div class="btn-group btn-group-sm">
-                <button type="button" class="btn btn-outline-primary">
-                  <i class="fas fa-edit"></i>
-                </button>
-                <button type="button" class="btn btn-outline-danger">
-                  <i class="fas fa-trash"></i>
-                </button>
-                <button type="button" class="btn btn-outline-info">
-                  <i class="fas fa-info-circle"></i>
-                </button>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>Final Examination</td>
-            <td>Physics</td>
-            <td>2023-06-10</td>
-            <td>180 minutes</td>
-            <td><span class="badge bg-warning">Pending</span></td>
-            <td>
-              <div class="btn-group btn-group-sm">
-                <button type="button" class="btn btn-outline-primary">
-                  <i class="fas fa-edit"></i>
-                </button>
-                <button type="button" class="btn btn-outline-danger">
-                  <i class="fas fa-trash"></i>
-                </button>
-                <button type="button" class="btn btn-outline-info">
-                  <i class="fas fa-info-circle"></i>
-                </button>
-              </div>
-            </td>
-          </tr>
+          <!-- Data will be loaded dynamically with JavaScript -->
         </tbody>
       </table>
     </div>

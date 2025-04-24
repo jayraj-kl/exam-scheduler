@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -29,6 +29,7 @@ public class Faculty {
     private int currentWorkload;
     
     @OneToMany(mappedBy = "faculty")
+    @JsonIgnore
     private List<ExamSlot> assignedSlots;
     
     private boolean isExamHead;

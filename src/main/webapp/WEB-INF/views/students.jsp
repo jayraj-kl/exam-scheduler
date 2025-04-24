@@ -46,7 +46,7 @@ pageEncoding="UTF-8"%> <%@ include file="layout/header.jsp" %>
   </div>
   <div class="card-body p-0">
     <div class="table-responsive">
-      <table class="table table-hover mb-0">
+      <table class="table table-hover mb-0" id="studentsTable">
         <thead class="table-light">
           <tr>
             <th scope="col">#</th>
@@ -59,49 +59,7 @@ pageEncoding="UTF-8"%> <%@ include file="layout/header.jsp" %>
           </tr>
         </thead>
         <tbody>
-          <!-- Sample data, would be replaced with actual data from backend -->
-          <tr>
-            <td>1</td>
-            <td>STD001</td>
-            <td>John Smith</td>
-            <td>Computer Science</td>
-            <td>4</td>
-            <td><span class="badge bg-success">Active</span></td>
-            <td>
-              <div class="btn-group btn-group-sm">
-                <button type="button" class="btn btn-outline-primary">
-                  <i class="fas fa-edit"></i>
-                </button>
-                <button type="button" class="btn btn-outline-danger">
-                  <i class="fas fa-trash"></i>
-                </button>
-                <button type="button" class="btn btn-outline-info">
-                  <i class="fas fa-info-circle"></i>
-                </button>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>STD002</td>
-            <td>Emily Johnson</td>
-            <td>Information Technology</td>
-            <td>2</td>
-            <td><span class="badge bg-success">Active</span></td>
-            <td>
-              <div class="btn-group btn-group-sm">
-                <button type="button" class="btn btn-outline-primary">
-                  <i class="fas fa-edit"></i>
-                </button>
-                <button type="button" class="btn btn-outline-danger">
-                  <i class="fas fa-trash"></i>
-                </button>
-                <button type="button" class="btn btn-outline-info">
-                  <i class="fas fa-info-circle"></i>
-                </button>
-              </div>
-            </td>
-          </tr>
+          <!-- Data will be loaded dynamically with JavaScript -->
         </tbody>
       </table>
     </div>

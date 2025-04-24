@@ -11,7 +11,11 @@
 <!-- jQuery and Bootstrap JavaScript -->
 <script src="/webjars/jquery/3.6.3/jquery.min.js"></script>
 <script src="/webjars/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+<!-- API Utilities -->
+<script src="/js/api/fetch-util.js"></script>
 <!-- Custom JavaScript -->
 <script src="/js/scripts.js"></script>
+<!-- API Test Helper -->
+<script src="/js/api-test.js"></script>
 </body>
 </html>

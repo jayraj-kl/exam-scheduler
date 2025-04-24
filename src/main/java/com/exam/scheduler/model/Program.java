@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 
 @Entity
@@ -19,7 +19,9 @@ public class Program {
     
     private String name;
     private String department;
+    private String code;
     
     @OneToMany(mappedBy = "program")
+    @JsonIgnore
     private List<Subject> subjects;
-}
+    }

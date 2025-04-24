@@ -10,4 +10,6 @@ import java.util.List;
 public interface SubjectRepository extends JpaRepository<Subject, Long> {
     
     List<Subject> findByProgramId(Long programId);
+    
+    List<Subject> findByProgramIdIn(List<Long> programIds);
 }

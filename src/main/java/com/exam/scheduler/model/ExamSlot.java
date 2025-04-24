@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -38,7 +38,16 @@ public class ExamSlot {
     @ManyToOne
     private Faculty examHead;
     
-    @OneToMany
+    @ManyToMany
+    @JoinTable(
+        name = "exam_slot_invigilators",
+        joinColumns = @JoinColumn(name = "exam_slot_id"),
+        inverseJoinColumns = @JoinColumn(name = "invigilators_id"),
+        uniqueConstraints = @UniqueConstraint(
+            columnNames = {"exam_slot_id", "invigilators_id"}
+        )
+    )
+    @JsonIgnore
     private List<Faculty> invigilators;
     
     private int studentCount;
