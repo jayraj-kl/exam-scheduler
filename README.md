@@ -218,16 +218,3 @@ If you change behaviour on purpose, regenerate the snapshot and review the diff 
 mvn test -DupdateSnapshot=true
 git diff src/test/resources/characterization/api-snapshot.txt
 ```
-
-## Known limitations
-
-The snapshot test pins the following current behaviours:
-
-- **Email doesn't work yet.** The Thymeleaf template `exam-schedule-template` does not exist under
-  `src/main/resources/templates/`, so `POST /api/schedule/{id}/email` returns 500.
-- **Export fails on incomplete slots.** It returns 500 if any slot is missing a faculty member,
-  room, slot type or reporting time (for example, a slot added by hand with `POST /{id}/slots`).
-- **A missing schedule returns 500, not 404,** on the `/api/schedule/{id}/...` endpoints.
-- **`GET /api/schedule/faculty/available` returns 500, not 404,** when nobody is available.
-- **`POST /api/schedule/generate` with a body must include `includeWeekends`.**
-- **No create/update API** for programs, subjects or faculty.
