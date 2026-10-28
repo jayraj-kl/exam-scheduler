@@ -1,0 +1,576 @@
+### GET /api/rooms
+status: 200
+content-type: application/json
+body: [{"available":true,"building":"A","floor":"1","id":1,"roomNumber":"A101","roomType":"Classroom","seatingCapacity":40},{"available":true,"building":"A","floor":"1","id":2,"roomNumber":"A102","roomType":"Classroom","seatingCapacity":60},{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},{"available":false,"building":"C","floor":"3","id":4,"roomNumber":"C301","roomType":"Classroom","seatingCapacity":100}]
+
+### GET /api/rooms/1
+status: 200
+content-type: application/json
+body: {"available":true,"building":"A","floor":"1","id":1,"roomNumber":"A101","roomType":"Classroom","seatingCapacity":40}
+
+### GET /api/rooms/999
+status: 404
+error: Room not found with id: 999
+
+### GET /api/rooms/available
+status: 200
+content-type: application/json
+body: [{"available":true,"building":"A","floor":"1","id":1,"roomNumber":"A101","roomType":"Classroom","seatingCapacity":40},{"available":true,"building":"A","floor":"1","id":2,"roomNumber":"A102","roomType":"Classroom","seatingCapacity":60},{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35}]
+
+### POST /api/rooms {"roomNumber":"D401","building":"D","floor":"4","seatingCapacity":50,"roomType":"Lab","isAvailable":true}
+status: 201
+content-type: application/json
+body: {"available":true,"building":"D","floor":"4","id":5,"roomNumber":"D401","roomType":"Lab","seatingCapacity":50}
+
+### PUT /api/rooms/5 {"roomNumber":"D402","building":"D","floor":"4","seatingCapacity":55,"roomType":"Hall","isAvailable":true}
+status: 200
+content-type: application/json
+body: {"available":true,"building":"D","floor":"4","id":5,"roomNumber":"D402","roomType":"Hall","seatingCapacity":55}
+
+### PUT /api/rooms/999 {"roomNumber":"X"}
+status: 404
+error: Room not found with id: 999
+
+### PUT /api/rooms/5/availability {"isAvailable":false}
+status: 200
+content-type: application/json
+body: {"available":false,"building":"D","floor":"4","id":5,"roomNumber":"D402","roomType":"Hall","seatingCapacity":55}
+
+### PUT /api/rooms/5/availability {}
+status: 400
+error: isAvailable field is required
+
+### PUT /api/rooms/999/availability {"isAvailable":true}
+status: 404
+error: Room not found with id: 999
+
+### GET /api/rooms/stats
+status: 200
+content-type: application/json
+body: {"availableRooms":3,"bookedRooms":2,"totalCapacity":290,"totalRooms":5}
+
+### GET /api/rooms/stats/total-rooms
+status: 200
+content-type: application/json
+body: {"totalRooms":5}
+
+### GET /api/rooms/stats/total-capacity
+status: 200
+content-type: application/json
+body: {"totalCapacity":290}
+
+### GET /api/rooms/stats/available-rooms
+status: 200
+content-type: application/json
+body: {"availableRooms":3}
+
+### DELETE /api/rooms/5
+status: 200
+content-type: application/json
+body: {"deleted":true}
+
+### DELETE /api/rooms/999
+status: 404
+error: Room not found with id: 999
+
+### POST /api/students {"studentId":"S001","name":"Alice","email":"alice@example.com","phone":"111","program":{"id":1},"semester":3,"status":"ACTIVE","enrollmentDate":"2028-08-01","address":"Street 1"}
+status: 201
+content-type: application/json
+body: {"address":"Street 1","email":"alice@example.com","enrollmentDate":"2028-08-01","id":1,"name":"Alice","phone":"111","program":{"code":null,"department":null,"id":1,"name":null},"semester":3,"status":"ACTIVE","studentId":"S001"}
+
+### POST /api/students {"studentId":"S002","name":"Bob","email":"bob@example.com","phone":"222","program":{"id":2},"semester":5,"status":"INACTIVE"}
+status: 201
+content-type: application/json
+body: {"address":null,"email":"bob@example.com","enrollmentDate":null,"id":2,"name":"Bob","phone":"222","program":{"code":null,"department":null,"id":2,"name":null},"semester":5,"status":"INACTIVE","studentId":"S002"}
+
+### POST /api/students {"studentId":"S003","name":"Cara","semester":3,"status":"ACTIVE"}
+status: 201
+content-type: application/json
+body: {"address":null,"email":null,"enrollmentDate":null,"id":3,"name":"Cara","phone":null,"program":null,"semester":3,"status":"ACTIVE","studentId":"S003"}
+
+### GET /api/students
+status: 200
+content-type: application/json
+body: [{"address":"Street 1","email":"alice@example.com","enrollmentDate":"2028-08-01","id":1,"name":"Alice","phone":"111","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"semester":3,"status":"ACTIVE","studentId":"S001"},{"address":null,"email":"bob@example.com","enrollmentDate":null,"id":2,"name":"Bob","phone":"222","program":{"code":"it","department":"IT","id":2,"name":"Information Technology"},"semester":5,"status":"INACTIVE","studentId":"S002"},{"address":null,"email":null,"enrollmentDate":null,"id":3,"name":"Cara","phone":null,"program":null,"semester":3,"status":"ACTIVE","studentId":"S003"}]
+
+### GET /api/students/1
+status: 200
+content-type: application/json
+body: {"address":"Street 1","email":"alice@example.com","enrollmentDate":"2028-08-01","id":1,"name":"Alice","phone":"111","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"semester":3,"status":"ACTIVE","studentId":"S001"}
+
+### GET /api/students/999
+status: 404
+error: Student not found with id: 999
+
+### GET /api/students/program/1
+status: 200
+content-type: application/json
+body: [{"address":"Street 1","email":"alice@example.com","enrollmentDate":"2028-08-01","id":1,"name":"Alice","phone":"111","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"semester":3,"status":"ACTIVE","studentId":"S001"}]
+
+### GET /api/students/status/ACTIVE
+status: 200
+content-type: application/json
+body: [{"address":"Street 1","email":"alice@example.com","enrollmentDate":"2028-08-01","id":1,"name":"Alice","phone":"111","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"semester":3,"status":"ACTIVE","studentId":"S001"},{"address":null,"email":null,"enrollmentDate":null,"id":3,"name":"Cara","phone":null,"program":null,"semester":3,"status":"ACTIVE","studentId":"S003"}]
+
+### GET /api/students/semester/3
+status: 200
+content-type: application/json
+body: [{"address":"Street 1","email":"alice@example.com","enrollmentDate":"2028-08-01","id":1,"name":"Alice","phone":"111","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"semester":3,"status":"ACTIVE","studentId":"S001"},{"address":null,"email":null,"enrollmentDate":null,"id":3,"name":"Cara","phone":null,"program":null,"semester":3,"status":"ACTIVE","studentId":"S003"}]
+
+### PUT /api/students/2 {"studentId":"S002","name":"Bobby","program":{"id":1},"semester":6,"status":"ACTIVE"}
+status: 200
+content-type: application/json
+body: {"address":null,"email":null,"enrollmentDate":null,"id":2,"name":"Bobby","phone":null,"program":{"code":null,"department":null,"id":1,"name":null},"semester":6,"status":"ACTIVE","studentId":"S002"}
+
+### PUT /api/students/999 {"name":"Nobody"}
+status: 404
+error: Student not found with id: 999
+
+### GET /api/students/stats/total
+status: 200
+content-type: application/json
+body: {"totalStudents":3}
+
+### GET /api/students/stats/by-program
+status: 200
+content-type: application/json
+body: {"studentsByProgram":{"Computer Science":2},"totalPrograms":1}
+
+### GET /api/students/stats/by-semester
+status: 200
+content-type: application/json
+body: {"studentsBySemester":{"3":2,"6":1}}
+
+### DELETE /api/students/3
+status: 200
+content-type: application/json
+body: {"deleted":true}
+
+### DELETE /api/students/999
+status: 404
+error: Student not found with id: 999
+
+### GET /api/exams/subjects
+status: 200
+content-type: application/json
+body: [{"backlogStudents":10,"code":"CS101","id":1,"name":"Algorithms","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":60,"totalStudents":70},{"backlogStudents":0,"code":"CS102","id":2,"name":"Databases","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":40,"totalStudents":40},{"backlogStudents":20,"code":"IT201","id":3,"name":"Networks","program":{"code":"it","department":"IT","id":2,"name":"Information Technology"},"regularStudents":0,"totalStudents":20}]
+
+### GET /api/exams/subjects/program/1
+status: 200
+content-type: application/json
+body: [{"backlogStudents":10,"code":"CS101","id":1,"name":"Algorithms","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":60,"totalStudents":70},{"backlogStudents":0,"code":"CS102","id":2,"name":"Databases","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":40,"totalStudents":40}]
+
+### POST /api/exams {"examName":"Midterm","subjectEntity":{"id":1},"examDate":"2030-01-07","duration":180,"startTime":"09:00:00","status":"SCHEDULED","description":"Mid"}
+status: 201
+content-type: application/json
+body: {"description":"Mid","duration":180,"examDate":"2030-01-07","examName":"Midterm","id":1,"startTime":"09:00:00","status":"SCHEDULED","subject":"Algorithms","subjectEntity":{"backlogStudents":10,"code":"CS101","id":1,"name":"Algorithms","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":60,"totalStudents":70}}
+
+### POST /api/exams {"examName":"Ghost","subjectEntity":{"id":999}}
+status: 404
+error: Subject not found with id: 999
+
+### POST /api/exams {"examName":"Plain","subject":"Physics","examDate":"2030-01-08","status":"DRAFT"}
+status: 201
+content-type: application/json
+body: {"description":null,"duration":0,"examDate":"2030-01-08","examName":"Plain","id":2,"startTime":null,"status":"DRAFT","subject":"Physics","subjectEntity":null}
+
+### POST /api/exams {"examName":"Named","subject":"Custom","subjectEntity":{"id":2}}
+status: 201
+content-type: application/json
+body: {"description":null,"duration":0,"examDate":null,"examName":"Named","id":3,"startTime":null,"status":null,"subject":"Custom","subjectEntity":{"backlogStudents":0,"code":"CS102","id":2,"name":"Databases","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":40,"totalStudents":40}}
+
+### GET /api/exams
+status: 200
+content-type: application/json
+body: [{"description":"Mid","duration":180,"examDate":"2030-01-07","examName":"Midterm","id":1,"startTime":"09:00:00","status":"SCHEDULED","subject":"Algorithms","subjectEntity":{"backlogStudents":10,"code":"CS101","id":1,"name":"Algorithms","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":60,"totalStudents":70}},{"description":null,"duration":0,"examDate":"2030-01-08","examName":"Plain","id":2,"startTime":null,"status":"DRAFT","subject":"Physics","subjectEntity":null},{"description":null,"duration":0,"examDate":null,"examName":"Named","id":3,"startTime":null,"status":null,"subject":"Custom","subjectEntity":{"backlogStudents":0,"code":"CS102","id":2,"name":"Databases","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":40,"totalStudents":40}}]
+
+### GET /api/exams/1
+status: 200
+content-type: application/json
+body: {"description":"Mid","duration":180,"examDate":"2030-01-07","examName":"Midterm","id":1,"startTime":"09:00:00","status":"SCHEDULED","subject":"Algorithms","subjectEntity":{"backlogStudents":10,"code":"CS101","id":1,"name":"Algorithms","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":60,"totalStudents":70}}
+
+### GET /api/exams/999
+status: 404
+error: Exam not found with id: 999
+
+### GET /api/exams/date/2030-01-07
+status: 200
+content-type: application/json
+body: [{"description":"Mid","duration":180,"examDate":"2030-01-07","examName":"Midterm","id":1,"startTime":"09:00:00","status":"SCHEDULED","subject":"Algorithms","subjectEntity":{"backlogStudents":10,"code":"CS101","id":1,"name":"Algorithms","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":60,"totalStudents":70}}]
+
+### GET /api/exams/status/SCHEDULED
+status: 200
+content-type: application/json
+body: [{"description":"Mid","duration":180,"examDate":"2030-01-07","examName":"Midterm","id":1,"startTime":"09:00:00","status":"SCHEDULED","subject":"Algorithms","subjectEntity":{"backlogStudents":10,"code":"CS101","id":1,"name":"Algorithms","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":60,"totalStudents":70}}]
+
+### GET /api/exams/subject?query=Phy
+status: 200
+content-type: application/json
+body: [{"description":null,"duration":0,"examDate":"2030-01-08","examName":"Plain","id":2,"startTime":null,"status":"DRAFT","subject":"Physics","subjectEntity":null}]
+
+### PUT /api/exams/2 {"examName":"Plain2","subjectEntity":{"id":2},"status":"SCHEDULED"}
+status: 200
+content-type: application/json
+body: {"description":null,"duration":0,"examDate":null,"examName":"Plain2","id":2,"startTime":null,"status":"SCHEDULED","subject":"Databases","subjectEntity":{"backlogStudents":0,"code":"CS102","id":2,"name":"Databases","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":40,"totalStudents":40}}
+
+### PUT /api/exams/1 {"examName":"Mid2","subject":"X","duration":90}
+status: 200
+content-type: application/json
+body: {"description":null,"duration":90,"examDate":null,"examName":"Mid2","id":1,"startTime":null,"status":null,"subject":"X","subjectEntity":null}
+
+### PUT /api/exams/2 {"examName":"Plain3","subjectEntity":{"id":999}}
+status: 404
+error: Subject not found with id: 999
+
+### PUT /api/exams/999 {"examName":"Nope"}
+status: 404
+error: Exam not found with id: 999
+
+### DELETE /api/exams/3
+status: 200
+content-type: application/json
+body: {"deleted":true}
+
+### DELETE /api/exams/999
+status: 404
+error: Exam not found with id: 999
+
+### GET /api/schedule
+status: 200
+content-type: application/json
+body: []
+
+### POST /api/schedule/generate?startDate=2030-01-10&endDate=2030-01-07&scheduleName=Backwards
+status: 400
+error: End date cannot be before start date
+
+### POST /api/schedule/generate?startDate=2030-01-07&endDate=2030-01-11&scheduleName=CS%20Winter {"programIds":["cs"],"includeWeekends":false}
+status: 200
+content-type: application/json
+body: {"endDate":"2030-01-11","id":1,"name":"CS%20Winter","startDate":"2030-01-07"}
+
+### POST /api/schedule/generate?startDate=2030-03-02&endDate=2030-03-03&scheduleName=IT%20Weekend {"programIds":["2"],"includeWeekends":true}
+status: 200
+content-type: application/json
+body: {"endDate":"2030-03-03","id":2,"name":"IT%20Weekend","startDate":"2030-03-02"}
+
+### POST /api/schedule/generate?startDate=2030-02-04&endDate=2030-02-08&scheduleName=No%20Body
+status: 200
+content-type: application/json
+body: {"endDate":"2030-02-08","id":3,"name":"No%20Body","startDate":"2030-02-04"}
+
+### POST /api/schedule/generate?startDate=2030-04-01&endDate=2030-04-05&scheduleName=Empty%20Body {}
+unhandled: java.lang.NullPointerException: Cannot invoke "java.lang.Boolean.booleanValue()" because the return value of "java.util.Map.get(Object)" is null
+
+### POST /api/schedule/generate?startDate=2030-04-01&endDate=2030-04-05&scheduleName=Numeric {"programIds":[1],"includeWeekends":false}
+unhandled: java.lang.ClassCastException: class java.lang.Integer cannot be cast to class java.lang.String (java.lang.Integer and java.lang.String are in module java.base of loader 'bootstrap')
+
+### POST /api/schedule/generate?startDate=2030-04-01&endDate=2030-04-05&scheduleName=Unknown {"programIds":["zz"],"includeWeekends":false}
+status: 200
+content-type: application/json
+body: {"endDate":"2030-04-05","id":4,"name":"Unknown","startDate":"2030-04-01"}
+
+### GET /api/schedule
+status: 200
+content-type: application/json
+body: [{"endDate":"2030-01-11","id":1,"name":"CS%20Winter","startDate":"2030-01-07"},{"endDate":"2030-03-03","id":2,"name":"IT%20Weekend","startDate":"2030-03-02"},{"endDate":"2030-02-08","id":3,"name":"No%20Body","startDate":"2030-02-04"},{"endDate":"2030-04-05","id":4,"name":"Unknown","startDate":"2030-04-01"}]
+
+### GET /api/schedule/1
+status: 200
+content-type: application/json
+body: {"endDate":"2030-01-11","id":1,"name":"CS%20Winter","startDate":"2030-01-07"}
+
+### GET /api/schedule/999
+status: 500
+error: Error retrieving schedule: Schedule not found with id: 999
+
+### GET /api/schedule/1/slots
+status: 200
+content-type: application/json
+body: [{"backlogStudentCount":5,"endTime":"12:00:00","examDate":"2030-01-07","examHead":{"availabilitySlots":[],"currentWorkload":5,"department":"CSE","email":"head.two@example.com","examHead":true,"id":2,"invigilator":false,"name":"Head Two","workloadCapacity":10},"faculty":{"availabilitySlots":[],"currentWorkload":6,"department":"CSE","email":"head.one@example.com","examHead":true,"id":1,"invigilator":false,"name":"Head One","workloadCapacity":10},"id":1,"morningSlot":true,"regularStudentCount":30,"reportingTime":"08:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"MIXED","startTime":"09:00:00","studentCount":35,"subject":{"backlogStudents":10,"code":"CS101","id":1,"name":"Algorithms","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":60,"totalStudents":70}},{"backlogStudentCount":10,"endTime":"17:00:00","examDate":"2030-01-07","examHead":{"availabilitySlots":[],"currentWorkload":6,"department":"CSE","email":"head.one@example.com","examHead":true,"id":1,"invigilator":false,"name":"Head One","workloadCapacity":10},"faculty":{"availabilitySlots":[],"currentWorkload":4,"department":"CSE","email":"invigilator.four@example.com","examHead":false,"id":4,"invigilator":true,"name":"Invigilator Four","workloadCapacity":10},"id":2,"morningSlot":false,"regularStudentCount":60,"reportingTime":"13:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"MIXED","startTime":"14:00:00","studentCount":35,"subject":{"backlogStudents":10,"code":"CS101","id":1,"name":"Algorithms","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":60,"totalStudents":70}},{"backlogStudentCount":0,"endTime":"12:00:00","examDate":"2030-01-08","examHead":{"availabilitySlots":[],"currentWorkload":5,"department":"CSE","email":"head.two@example.com","examHead":true,"id":2,"invigilator":false,"name":"Head Two","workloadCapacity":10},"faculty":{"availabilitySlots":[],"currentWorkload":4,"department":"CSE","email":"invigilator.six@example.com","examHead":false,"id":6,"invigilator":true,"name":"Invigilator Six","workloadCapacity":10},"id":3,"morningSlot":true,"regularStudentCount":20,"reportingTime":"08:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"REGULAR","startTime":"09:00:00","studentCount":20,"subject":{"backlogStudents":0,"code":"CS102","id":2,"name":"Databases","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":40,"totalStudents":40}},{"backlogStudentCount":0,"endTime":"17:00:00","examDate":"2030-01-08","examHead":{"availabilitySlots":[],"currentWorkload":6,"department":"CSE","email":"head.one@example.com","examHead":true,"id":1,"invigilator":false,"name":"Head One","workloadCapacity":10},"faculty":{"availabilitySlots":[],"currentWorkload":3,"department":"CSE","email":"regular.seven@example.com","examHead":false,"id":7,"invigilator":false,"name":"Regular Seven","workloadCapacity":5},"id":4,"morningSlot":false,"regularStudentCount":20,"reportingTime":"13:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"REGULAR","startTime":"14:00:00","studentCount":20,"subject":{"backlogStudents":0,"code":"CS102","id":2,"name":"Databases","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":40,"totalStudents":40}}]
+
+### GET /api/schedule/999/slots
+status: 500
+error: Error retrieving exam slots for schedule: Schedule not found with id: 999
+
+### GET /api/schedule/1/export
+status: 200
+content-type: application/octet-stream
+content-disposition: form-data; name="attachment"; filename="exam_schedule_CS%20Winter.xlsx"
+workbook: Exam Schedule
+  | Day | Date | Faculty Name | Role | Subject | Program | Exam Type | Reporting Time | Room Number | Students |
+  | MONDAY | 07-01-2030 | Head One | Faculty | Algorithms | Computer Science | MIXED | 08:30 | B201 | 35 |
+  | MONDAY | 07-01-2030 | Invigilator Four | Faculty | Algorithms | Computer Science | MIXED | 13:30 | B201 | 35 |
+  | TUESDAY | 08-01-2030 | Invigilator Six | Faculty | Databases | Computer Science | REGULAR | 08:30 | B201 | 20 |
+  | TUESDAY | 08-01-2030 | Regular Seven | Faculty | Databases | Computer Science | REGULAR | 13:30 | B201 | 20 |
+
+### GET /api/schedule/999/export
+status: 500
+error: Error exporting schedule: Schedule not found with id: 999
+
+### POST /api/schedule/1/email
+status: 500
+error: Error sending emails: Error resolving template [exam-schedule-template], template might not exist or might not be accessible by any of the configured Template Resolvers
+
+### POST /api/schedule/999/email
+status: 500
+error: Error sending emails: Schedule not found with id: 999
+
+### PUT /api/schedule/slots/1/faculty?facultyId=7
+status: 200
+content-type: application/json
+body: {"backlogStudentCount":5,"endTime":"12:00:00","examDate":"2030-01-07","examHead":{"availabilitySlots":[],"currentWorkload":5,"department":"CSE","email":"head.two@example.com","examHead":true,"id":2,"invigilator":false,"name":"Head Two","workloadCapacity":10},"faculty":{"availabilitySlots":[],"currentWorkload":4,"department":"CSE","email":"regular.seven@example.com","examHead":false,"id":7,"invigilator":false,"name":"Regular Seven","workloadCapacity":5},"id":1,"morningSlot":true,"regularStudentCount":30,"reportingTime":"08:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"MIXED","startTime":"09:00:00","studentCount":35,"subject":{"backlogStudents":10,"code":"CS101","id":1,"name":"Algorithms","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":60,"totalStudents":70}}
+
+### PUT /api/schedule/slots/1/faculty?facultyId=999
+status: 404
+error: Faculty not found with id: 999
+
+### PUT /api/schedule/slots/999/faculty?facultyId=1
+status: 404
+error: Exam slot not found with id: 999
+
+### PUT /api/schedule/slots/1/examHead?facultyId=3
+status: 400
+error: Faculty is not an exam head
+
+### PUT /api/schedule/slots/1/examHead?facultyId=2
+status: 200
+content-type: application/json
+body: {"backlogStudentCount":5,"endTime":"12:00:00","examDate":"2030-01-07","examHead":{"availabilitySlots":[],"currentWorkload":6,"department":"CSE","email":"head.two@example.com","examHead":true,"id":2,"invigilator":false,"name":"Head Two","workloadCapacity":10},"faculty":{"availabilitySlots":[],"currentWorkload":4,"department":"CSE","email":"regular.seven@example.com","examHead":false,"id":7,"invigilator":false,"name":"Regular Seven","workloadCapacity":5},"id":1,"morningSlot":true,"regularStudentCount":30,"reportingTime":"08:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"MIXED","startTime":"09:00:00","studentCount":35,"subject":{"backlogStudents":10,"code":"CS101","id":1,"name":"Algorithms","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":60,"totalStudents":70}}
+
+### PUT /api/schedule/slots/999/examHead?facultyId=2
+status: 404
+error: Exam slot not found with id: 999
+
+### POST /api/schedule/slots/1/invigilators?facultyId=1
+status: 400
+error: Faculty is not an invigilator
+
+### POST /api/schedule/slots/1/invigilators?facultyId=6
+status: 200
+content-type: application/json
+body: {"backlogStudentCount":5,"endTime":"12:00:00","examDate":"2030-01-07","examHead":{"availabilitySlots":[],"currentWorkload":6,"department":"CSE","email":"head.two@example.com","examHead":true,"id":2,"invigilator":false,"name":"Head Two","workloadCapacity":10},"faculty":{"availabilitySlots":[],"currentWorkload":4,"department":"CSE","email":"regular.seven@example.com","examHead":false,"id":7,"invigilator":false,"name":"Regular Seven","workloadCapacity":5},"id":1,"morningSlot":true,"regularStudentCount":30,"reportingTime":"08:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"MIXED","startTime":"09:00:00","studentCount":35,"subject":{"backlogStudents":10,"code":"CS101","id":1,"name":"Algorithms","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":60,"totalStudents":70}}
+
+### POST /api/schedule/slots/1/invigilators?facultyId=6
+status: 409
+error: Faculty is already assigned as an invigilator for this slot
+
+### POST /api/schedule/slots/999/invigilators?facultyId=6
+status: 404
+error: Exam slot not found with id: 999
+
+### DELETE /api/schedule/slots/1/invigilators/6
+status: 200
+content-type: application/json
+body: {"backlogStudentCount":5,"endTime":"12:00:00","examDate":"2030-01-07","examHead":{"availabilitySlots":[],"currentWorkload":6,"department":"CSE","email":"head.two@example.com","examHead":true,"id":2,"invigilator":false,"name":"Head Two","workloadCapacity":10},"faculty":{"availabilitySlots":[],"currentWorkload":4,"department":"CSE","email":"regular.seven@example.com","examHead":false,"id":7,"invigilator":false,"name":"Regular Seven","workloadCapacity":5},"id":1,"morningSlot":true,"regularStudentCount":30,"reportingTime":"08:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"MIXED","startTime":"09:00:00","studentCount":35,"subject":{"backlogStudents":10,"code":"CS101","id":1,"name":"Algorithms","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":60,"totalStudents":70}}
+
+### DELETE /api/schedule/slots/1/invigilators/6
+status: 400
+error: Faculty is not an invigilator for this slot
+
+### DELETE /api/schedule/slots/1/invigilators/999
+status: 404
+error: Faculty not found with id: 999
+
+### DELETE /api/schedule/slots/999/invigilators/6
+status: 404
+error: Exam slot not found with id: 999
+
+### GET /api/schedule/faculty/available?date=2030-01-07&startTime=09:00:00&endTime=12:00:00
+status: 200
+content-type: application/json
+body: [{"availabilitySlots":[],"currentWorkload":4,"department":"CSE","email":"invigilator.three@example.com","examHead":false,"id":3,"invigilator":true,"name":"Invigilator Three","workloadCapacity":10},{"availabilitySlots":[],"currentWorkload":4,"department":"CSE","email":"invigilator.four@example.com","examHead":false,"id":4,"invigilator":true,"name":"Invigilator Four","workloadCapacity":10},{"availabilitySlots":[],"currentWorkload":4,"department":"CSE","email":"invigilator.five@example.com","examHead":false,"id":5,"invigilator":true,"name":"Invigilator Five","workloadCapacity":10},{"availabilitySlots":[],"currentWorkload":4,"department":"CSE","email":"invigilator.six@example.com","examHead":false,"id":6,"invigilator":true,"name":"Invigilator Six","workloadCapacity":10},{"availabilitySlots":[],"currentWorkload":6,"department":"CSE","email":"head.one@example.com","examHead":true,"id":1,"invigilator":false,"name":"Head One","workloadCapacity":10},{"availabilitySlots":[],"currentWorkload":6,"department":"CSE","email":"head.two@example.com","examHead":true,"id":2,"invigilator":false,"name":"Head Two","workloadCapacity":10}]
+
+### GET /api/schedule/faculty/available?date=2020-01-07&startTime=09:00:00&endTime=12:00:00
+status: 400
+error: Cannot check availability for past dates
+
+### GET /api/schedule/faculty/available?date=2030-01-07&startTime=12:00:00&endTime=09:00:00
+status: 400
+error: End time cannot be before start time
+
+### POST /api/schedule/faculty/7/availability {"date":"2030-01-07","startTime":"09:00","endTime":"12:00"}
+status: 200
+content-type: application/json
+body: {"date":"2030-01-07","endTime":"12:00","faculty":{"availabilitySlots":["2030-01-07T09:00:00","2030-01-07T10:00:00","2030-01-07T11:00:00"],"currentWorkload":4,"department":"CSE","email":"regular.seven@example.com","examHead":false,"id":7,"invigilator":false,"name":"Regular Seven","workloadCapacity":5},"id":7,"startTime":"09:00"}
+
+### POST /api/schedule/faculty/999/availability {"date":"2030-01-07","startTime":"09:00","endTime":"12:00"}
+status: 404
+error: Faculty not found with id: 999
+
+### POST /api/schedule/faculty/7/availability {"date":"not-a-date"}
+status: 500
+error: Error adding faculty availability slot: Text 'not-a-date' could not be parsed at index 0
+
+### GET /api/exams/faculty/workload
+status: 200
+content-type: application/json
+body: [{"availabilitySlots":[],"currentWorkload":6,"department":"CSE","id":1,"isExamHead":true,"isInvigilator":false,"name":"Head One","usagePercentage":60.0,"workloadCapacity":10},{"availabilitySlots":[],"currentWorkload":6,"department":"CSE","id":2,"isExamHead":true,"isInvigilator":false,"name":"Head Two","usagePercentage":60.0,"workloadCapacity":10},{"availabilitySlots":[],"currentWorkload":4,"department":"CSE","id":3,"isExamHead":false,"isInvigilator":true,"name":"Invigilator Three","usagePercentage":40.0,"workloadCapacity":10},{"availabilitySlots":[],"currentWorkload":4,"department":"CSE","id":4,"isExamHead":false,"isInvigilator":true,"name":"Invigilator Four","usagePercentage":40.0,"workloadCapacity":10},{"availabilitySlots":[],"currentWorkload":4,"department":"CSE","id":5,"isExamHead":false,"isInvigilator":true,"name":"Invigilator Five","usagePercentage":40.0,"workloadCapacity":10},{"availabilitySlots":[],"currentWorkload":4,"department":"CSE","id":6,"isExamHead":false,"isInvigilator":true,"name":"Invigilator Six","usagePercentage":40.0,"workloadCapacity":10},{"availabilitySlots":["2030-01-07T09:00:00","2030-01-07T10:00:00","2030-01-07T11:00:00"],"currentWorkload":4,"department":"CSE","id":7,"isExamHead":false,"isInvigilator":false,"name":"Regular Seven","usagePercentage":80.0,"workloadCapacity":5}]
+
+### PUT /api/schedule/slots/2/allocate {}
+status: 200
+content-type: application/json
+body: {"backlogStudentCount":10,"endTime":"17:00:00","examDate":"2030-01-07","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.one@example.com","examHead":true,"id":1,"invigilator":false,"name":"Head One","workloadCapacity":10},"faculty":{"availabilitySlots":[],"currentWorkload":5,"department":"CSE","email":"invigilator.three@example.com","examHead":false,"id":3,"invigilator":true,"name":"Invigilator Three","workloadCapacity":10},"id":2,"morningSlot":false,"regularStudentCount":60,"reportingTime":"13:30:00","room":{"available":true,"building":"A","floor":"1","id":1,"roomNumber":"A101","roomType":"Classroom","seatingCapacity":40},"slotType":"MIXED","startTime":"14:00:00","studentCount":35,"subject":{"backlogStudents":10,"code":"CS101","id":1,"name":"Algorithms","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":60,"totalStudents":70}}
+
+### PUT /api/schedule/slots/3/allocate {"assignRoom":false,"assignInvigilators":false}
+status: 200
+content-type: application/json
+body: {"backlogStudentCount":0,"endTime":"12:00:00","examDate":"2030-01-08","examHead":{"availabilitySlots":[],"currentWorkload":6,"department":"CSE","email":"head.two@example.com","examHead":true,"id":2,"invigilator":false,"name":"Head Two","workloadCapacity":10},"faculty":{"availabilitySlots":[],"currentWorkload":5,"department":"CSE","email":"invigilator.five@example.com","examHead":false,"id":5,"invigilator":true,"name":"Invigilator Five","workloadCapacity":10},"id":3,"morningSlot":true,"regularStudentCount":20,"reportingTime":"08:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"REGULAR","startTime":"09:00:00","studentCount":20,"subject":{"backlogStudents":0,"code":"CS102","id":2,"name":"Databases","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":40,"totalStudents":40}}
+
+### PUT /api/schedule/slots/3/allocate {"assignRoom":null}
+status: 500
+error: Error allocating resources for exam slot: Cannot invoke "java.lang.Boolean.booleanValue()" because the return value of "java.util.Map.getOrDefault(Object, Object)" is null
+
+### PUT /api/schedule/slots/999/allocate {}
+status: 500
+error: Error allocating resources for exam slot: 404 NOT_FOUND "Exam slot not found with id: 999"
+
+### POST /api/schedule/1/slots {"examDate":"2030-01-10","startTime":"09:00:00","endTime":"12:00:00","studentCount":10,"subject":{"id":3}}
+status: 201
+content-type: application/json
+body: {"backlogStudentCount":0,"endTime":"12:00:00","examDate":"2030-01-10","examHead":null,"faculty":null,"id":11,"morningSlot":false,"regularStudentCount":0,"reportingTime":null,"room":null,"slotType":null,"startTime":"09:00:00","studentCount":10,"subject":{"backlogStudents":0,"code":null,"id":3,"name":null,"program":null,"regularStudents":0,"totalStudents":0}}
+
+### POST /api/schedule/999/slots {"examDate":"2030-01-10"}
+status: 500
+error: Error adding exam slot to schedule: Schedule not found with id: 999
+
+### GET /api/schedule/1/export
+status: 500
+error: Error exporting schedule: Cannot invoke "com.exam.scheduler.model.Faculty.getName()" because the return value of "com.exam.scheduler.model.ExamSlot.getFaculty()" is null
+
+### POST /api/schedule/1/allocate-all {}
+status: 200
+content-type: application/json
+body: {"failedAllocations":4,"message":"Resources allocated successfully","scheduleName":"CS%20Winter","slots":[{"backlogStudentCount":5,"endTime":"12:00:00","examDate":"2030-01-07","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.two@example.com","examHead":true,"id":2,"invigilator":false,"name":"Head Two","workloadCapacity":10},"faculty":{"availabilitySlots":["2030-01-07T09:00:00","2030-01-07T10:00:00","2030-01-07T11:00:00"],"currentWorkload":4,"department":"CSE","email":"regular.seven@example.com","examHead":false,"id":7,"invigilator":false,"name":"Regular Seven","workloadCapacity":5},"id":1,"morningSlot":true,"regularStudentCount":30,"reportingTime":"08:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"MIXED","startTime":"09:00:00","studentCount":35,"subject":{"backlogStudents":10,"code":"CS101","id":1,"name":"Algorithms","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":60,"totalStudents":70}},{"backlogStudentCount":10,"endTime":"17:00:00","examDate":"2030-01-07","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.one@example.com","examHead":true,"id":1,"invigilator":false,"name":"Head One","workloadCapacity":10},"faculty":{"availabilitySlots":[],"currentWorkload":6,"department":"CSE","email":"invigilator.three@example.com","examHead":false,"id":3,"invigilator":true,"name":"Invigilator Three","workloadCapacity":10},"id":2,"morningSlot":false,"regularStudentCount":60,"reportingTime":"13:30:00","room":{"available":true,"building":"A","floor":"1","id":1,"roomNumber":"A101","roomType":"Classroom","seatingCapacity":40},"slotType":"MIXED","startTime":"14:00:00","studentCount":35,"subject":{"backlogStudents":10,"code":"CS101","id":1,"name":"Algorithms","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":60,"totalStudents":70}},{"backlogStudentCount":0,"endTime":"12:00:00","examDate":"2030-01-08","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.two@example.com","examHead":true,"id":2,"invigilator":false,"name":"Head Two","workloadCapacity":10},"faculty":{"availabilitySlots":[],"currentWorkload":5,"department":"CSE","email":"invigilator.five@example.com","examHead":false,"id":5,"invigilator":true,"name":"Invigilator Five","workloadCapacity":10},"id":3,"morningSlot":true,"regularStudentCount":20,"reportingTime":"08:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"REGULAR","startTime":"09:00:00","studentCount":20,"subject":{"backlogStudents":0,"code":"CS102","id":2,"name":"Databases","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":40,"totalStudents":40}},{"backlogStudentCount":0,"endTime":"17:00:00","examDate":"2030-01-08","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.one@example.com","examHead":true,"id":1,"invigilator":false,"name":"Head One","workloadCapacity":10},"faculty":{"availabilitySlots":["2030-01-07T09:00:00","2030-01-07T10:00:00","2030-01-07T11:00:00"],"currentWorkload":4,"department":"CSE","email":"regular.seven@example.com","examHead":false,"id":7,"invigilator":false,"name":"Regular Seven","workloadCapacity":5},"id":4,"morningSlot":false,"regularStudentCount":20,"reportingTime":"13:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"REGULAR","startTime":"14:00:00","studentCount":20,"subject":{"backlogStudents":0,"code":"CS102","id":2,"name":"Databases","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":40,"totalStudents":40}},{"backlogStudentCount":0,"endTime":"12:00:00","examDate":"2030-01-10","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.two@example.com","examHead":true,"id":2,"invigilator":false,"name":"Head Two","workloadCapacity":10},"faculty":{"availabilitySlots":[],"currentWorkload":5,"department":"CSE","email":"invigilator.six@example.com","examHead":false,"id":6,"invigilator":true,"name":"Invigilator Six","workloadCapacity":10},"id":11,"morningSlot":false,"regularStudentCount":0,"reportingTime":null,"room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":null,"startTime":"09:00:00","studentCount":10,"subject":{"backlogStudents":20,"code":"IT201","id":3,"name":"Networks","program":{"code":"it","department":"IT","id":2,"name":"Information Technology"},"regularStudents":0,"totalStudents":20}}],"slotsUpdated":1,"success":true,"successfulAllocations":1,"totalSlots":5}
+
+### POST /api/schedule/1/allocate-all {"assignFaculty":false}
+status: 200
+content-type: application/json
+body: {"failedAllocations":5,"message":"Resources allocated successfully","scheduleName":"CS%20Winter","slots":[{"backlogStudentCount":5,"endTime":"12:00:00","examDate":"2030-01-07","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.two@example.com","examHead":true,"id":2,"invigilator":false,"name":"Head Two","workloadCapacity":10},"faculty":{"availabilitySlots":["2030-01-07T09:00:00","2030-01-07T10:00:00","2030-01-07T11:00:00"],"currentWorkload":4,"department":"CSE","email":"regular.seven@example.com","examHead":false,"id":7,"invigilator":false,"name":"Regular Seven","workloadCapacity":5},"id":1,"morningSlot":true,"regularStudentCount":30,"reportingTime":"08:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"MIXED","startTime":"09:00:00","studentCount":35,"subject":{"backlogStudents":10,"code":"CS101","id":1,"name":"Algorithms","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":60,"totalStudents":70}},{"backlogStudentCount":10,"endTime":"17:00:00","examDate":"2030-01-07","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.one@example.com","examHead":true,"id":1,"invigilator":false,"name":"Head One","workloadCapacity":10},"faculty":{"availabilitySlots":[],"currentWorkload":6,"department":"CSE","email":"invigilator.three@example.com","examHead":false,"id":3,"invigilator":true,"name":"Invigilator Three","workloadCapacity":10},"id":2,"morningSlot":false,"regularStudentCount":60,"reportingTime":"13:30:00","room":{"available":true,"building":"A","floor":"1","id":1,"roomNumber":"A101","roomType":"Classroom","seatingCapacity":40},"slotType":"MIXED","startTime":"14:00:00","studentCount":35,"subject":{"backlogStudents":10,"code":"CS101","id":1,"name":"Algorithms","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":60,"totalStudents":70}},{"backlogStudentCount":0,"endTime":"12:00:00","examDate":"2030-01-08","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.two@example.com","examHead":true,"id":2,"invigilator":false,"name":"Head Two","workloadCapacity":10},"faculty":{"availabilitySlots":[],"currentWorkload":5,"department":"CSE","email":"invigilator.five@example.com","examHead":false,"id":5,"invigilator":true,"name":"Invigilator Five","workloadCapacity":10},"id":3,"morningSlot":true,"regularStudentCount":20,"reportingTime":"08:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"REGULAR","startTime":"09:00:00","studentCount":20,"subject":{"backlogStudents":0,"code":"CS102","id":2,"name":"Databases","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":40,"totalStudents":40}},{"backlogStudentCount":0,"endTime":"17:00:00","examDate":"2030-01-08","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.one@example.com","examHead":true,"id":1,"invigilator":false,"name":"Head One","workloadCapacity":10},"faculty":{"availabilitySlots":["2030-01-07T09:00:00","2030-01-07T10:00:00","2030-01-07T11:00:00"],"currentWorkload":4,"department":"CSE","email":"regular.seven@example.com","examHead":false,"id":7,"invigilator":false,"name":"Regular Seven","workloadCapacity":5},"id":4,"morningSlot":false,"regularStudentCount":20,"reportingTime":"13:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"REGULAR","startTime":"14:00:00","studentCount":20,"subject":{"backlogStudents":0,"code":"CS102","id":2,"name":"Databases","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":40,"totalStudents":40}},{"backlogStudentCount":0,"endTime":"12:00:00","examDate":"2030-01-10","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.two@example.com","examHead":true,"id":2,"invigilator":false,"name":"Head Two","workloadCapacity":10},"faculty":{"availabilitySlots":[],"currentWorkload":5,"department":"CSE","email":"invigilator.six@example.com","examHead":false,"id":6,"invigilator":true,"name":"Invigilator Six","workloadCapacity":10},"id":11,"morningSlot":false,"regularStudentCount":0,"reportingTime":null,"room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":null,"startTime":"09:00:00","studentCount":10,"subject":{"backlogStudents":20,"code":"IT201","id":3,"name":"Networks","program":{"code":"it","department":"IT","id":2,"name":"Information Technology"},"regularStudents":0,"totalStudents":20}}],"slotsUpdated":0,"success":true,"successfulAllocations":0,"totalSlots":5}
+
+### POST /api/schedule/1/allocate-all {"assignFaculty":null}
+status: 500
+error: Error allocating resources for schedule: Cannot invoke "java.lang.Boolean.booleanValue()" because the return value of "java.util.Map.getOrDefault(Object, Object)" is null
+
+### POST /api/schedule/999/allocate-all {}
+status: 500
+error: Error allocating resources for schedule: Schedule not found with id: 999
+
+### GET /api/schedule/1/slots
+status: 200
+content-type: application/json
+body: [{"backlogStudentCount":5,"endTime":"12:00:00","examDate":"2030-01-07","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.two@example.com","examHead":true,"id":2,"invigilator":false,"name":"Head Two","workloadCapacity":10},"faculty":{"availabilitySlots":["2030-01-07T09:00:00","2030-01-07T10:00:00","2030-01-07T11:00:00"],"currentWorkload":4,"department":"CSE","email":"regular.seven@example.com","examHead":false,"id":7,"invigilator":false,"name":"Regular Seven","workloadCapacity":5},"id":1,"morningSlot":true,"regularStudentCount":30,"reportingTime":"08:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"MIXED","startTime":"09:00:00","studentCount":35,"subject":{"backlogStudents":10,"code":"CS101","id":1,"name":"Algorithms","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":60,"totalStudents":70}},{"backlogStudentCount":10,"endTime":"17:00:00","examDate":"2030-01-07","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.one@example.com","examHead":true,"id":1,"invigilator":false,"name":"Head One","workloadCapacity":10},"faculty":{"availabilitySlots":[],"currentWorkload":6,"department":"CSE","email":"invigilator.three@example.com","examHead":false,"id":3,"invigilator":true,"name":"Invigilator Three","workloadCapacity":10},"id":2,"morningSlot":false,"regularStudentCount":60,"reportingTime":"13:30:00","room":{"available":true,"building":"A","floor":"1","id":1,"roomNumber":"A101","roomType":"Classroom","seatingCapacity":40},"slotType":"MIXED","startTime":"14:00:00","studentCount":35,"subject":{"backlogStudents":10,"code":"CS101","id":1,"name":"Algorithms","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":60,"totalStudents":70}},{"backlogStudentCount":0,"endTime":"12:00:00","examDate":"2030-01-08","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.two@example.com","examHead":true,"id":2,"invigilator":false,"name":"Head Two","workloadCapacity":10},"faculty":{"availabilitySlots":[],"currentWorkload":5,"department":"CSE","email":"invigilator.five@example.com","examHead":false,"id":5,"invigilator":true,"name":"Invigilator Five","workloadCapacity":10},"id":3,"morningSlot":true,"regularStudentCount":20,"reportingTime":"08:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"REGULAR","startTime":"09:00:00","studentCount":20,"subject":{"backlogStudents":0,"code":"CS102","id":2,"name":"Databases","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":40,"totalStudents":40}},{"backlogStudentCount":0,"endTime":"17:00:00","examDate":"2030-01-08","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.one@example.com","examHead":true,"id":1,"invigilator":false,"name":"Head One","workloadCapacity":10},"faculty":{"availabilitySlots":["2030-01-07T09:00:00","2030-01-07T10:00:00","2030-01-07T11:00:00"],"currentWorkload":4,"department":"CSE","email":"regular.seven@example.com","examHead":false,"id":7,"invigilator":false,"name":"Regular Seven","workloadCapacity":5},"id":4,"morningSlot":false,"regularStudentCount":20,"reportingTime":"13:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"REGULAR","startTime":"14:00:00","studentCount":20,"subject":{"backlogStudents":0,"code":"CS102","id":2,"name":"Databases","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":40,"totalStudents":40}},{"backlogStudentCount":0,"endTime":"12:00:00","examDate":"2030-01-10","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.two@example.com","examHead":true,"id":2,"invigilator":false,"name":"Head Two","workloadCapacity":10},"faculty":{"availabilitySlots":[],"currentWorkload":5,"department":"CSE","email":"invigilator.six@example.com","examHead":false,"id":6,"invigilator":true,"name":"Invigilator Six","workloadCapacity":10},"id":11,"morningSlot":false,"regularStudentCount":0,"reportingTime":null,"room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":null,"startTime":"09:00:00","studentCount":10,"subject":{"backlogStudents":20,"code":"IT201","id":3,"name":"Networks","program":{"code":"it","department":"IT","id":2,"name":"Information Technology"},"regularStudents":0,"totalStudents":20}}]
+
+### GET /api/schedule/1/export
+status: 500
+error: Error exporting schedule: Cannot invoke "com.exam.scheduler.model.ExamSlot$SlotType.toString()" because the return value of "com.exam.scheduler.model.ExamSlot.getSlotType()" is null
+
+### GET /api/exams/faculty/workload
+status: 200
+content-type: application/json
+body: [{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","id":1,"isExamHead":true,"isInvigilator":false,"name":"Head One","usagePercentage":70.0,"workloadCapacity":10},{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","id":2,"isExamHead":true,"isInvigilator":false,"name":"Head Two","usagePercentage":70.0,"workloadCapacity":10},{"availabilitySlots":[],"currentWorkload":6,"department":"CSE","id":3,"isExamHead":false,"isInvigilator":true,"name":"Invigilator Three","usagePercentage":60.0,"workloadCapacity":10},{"availabilitySlots":[],"currentWorkload":5,"department":"CSE","id":4,"isExamHead":false,"isInvigilator":true,"name":"Invigilator Four","usagePercentage":50.0,"workloadCapacity":10},{"availabilitySlots":[],"currentWorkload":5,"department":"CSE","id":5,"isExamHead":false,"isInvigilator":true,"name":"Invigilator Five","usagePercentage":50.0,"workloadCapacity":10},{"availabilitySlots":[],"currentWorkload":5,"department":"CSE","id":6,"isExamHead":false,"isInvigilator":true,"name":"Invigilator Six","usagePercentage":50.0,"workloadCapacity":10},{"availabilitySlots":["2030-01-07T09:00:00","2030-01-07T10:00:00","2030-01-07T11:00:00"],"currentWorkload":4,"department":"CSE","id":7,"isExamHead":false,"isInvigilator":false,"name":"Regular Seven","usagePercentage":80.0,"workloadCapacity":5}]
+
+### GET /api/exams/subject/Algorithms
+status: 200
+content-type: application/json
+body: [{"backlogStudentCount":5,"endTime":"12:00:00","examDate":"2030-01-07","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.two@example.com","examHead":true,"id":2,"invigilator":false,"name":"Head Two","workloadCapacity":10},"faculty":{"availabilitySlots":["2030-01-07T09:00:00","2030-01-07T10:00:00","2030-01-07T11:00:00"],"currentWorkload":4,"department":"CSE","email":"regular.seven@example.com","examHead":false,"id":7,"invigilator":false,"name":"Regular Seven","workloadCapacity":5},"id":1,"morningSlot":true,"regularStudentCount":30,"reportingTime":"08:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"MIXED","startTime":"09:00:00","studentCount":35,"subject":{"backlogStudents":10,"code":"CS101","id":1,"name":"Algorithms","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":60,"totalStudents":70}},{"backlogStudentCount":10,"endTime":"17:00:00","examDate":"2030-01-07","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.one@example.com","examHead":true,"id":1,"invigilator":false,"name":"Head One","workloadCapacity":10},"faculty":{"availabilitySlots":[],"currentWorkload":6,"department":"CSE","email":"invigilator.three@example.com","examHead":false,"id":3,"invigilator":true,"name":"Invigilator Three","workloadCapacity":10},"id":2,"morningSlot":false,"regularStudentCount":60,"reportingTime":"13:30:00","room":{"available":true,"building":"A","floor":"1","id":1,"roomNumber":"A101","roomType":"Classroom","seatingCapacity":40},"slotType":"MIXED","startTime":"14:00:00","studentCount":35,"subject":{"backlogStudents":10,"code":"CS101","id":1,"name":"Algorithms","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":60,"totalStudents":70}},{"backlogStudentCount":5,"endTime":"12:00:00","examDate":"2030-02-04","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.one@example.com","examHead":true,"id":1,"invigilator":false,"name":"Head One","workloadCapacity":10},"faculty":{"availabilitySlots":["2030-01-07T09:00:00","2030-01-07T10:00:00","2030-01-07T11:00:00"],"currentWorkload":4,"department":"CSE","email":"regular.seven@example.com","examHead":false,"id":7,"invigilator":false,"name":"Regular Seven","workloadCapacity":5},"id":6,"morningSlot":true,"regularStudentCount":30,"reportingTime":"08:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"MIXED","startTime":"09:00:00","studentCount":35,"subject":{"backlogStudents":10,"code":"CS101","id":1,"name":"Algorithms","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":60,"totalStudents":70}},{"backlogStudentCount":10,"endTime":"17:00:00","examDate":"2030-02-04","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.two@example.com","examHead":true,"id":2,"invigilator":false,"name":"Head Two","workloadCapacity":10},"faculty":{"availabilitySlots":[],"currentWorkload":5,"department":"CSE","email":"invigilator.four@example.com","examHead":false,"id":4,"invigilator":true,"name":"Invigilator Four","workloadCapacity":10},"id":7,"morningSlot":false,"regularStudentCount":60,"reportingTime":"13:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"MIXED","startTime":"14:00:00","studentCount":35,"subject":{"backlogStudents":10,"code":"CS101","id":1,"name":"Algorithms","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":60,"totalStudents":70}}]
+
+### GET /api/exams/subject/CS102
+status: 200
+content-type: application/json
+body: [{"backlogStudentCount":0,"endTime":"12:00:00","examDate":"2030-01-08","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.two@example.com","examHead":true,"id":2,"invigilator":false,"name":"Head Two","workloadCapacity":10},"faculty":{"availabilitySlots":[],"currentWorkload":5,"department":"CSE","email":"invigilator.five@example.com","examHead":false,"id":5,"invigilator":true,"name":"Invigilator Five","workloadCapacity":10},"id":3,"morningSlot":true,"regularStudentCount":20,"reportingTime":"08:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"REGULAR","startTime":"09:00:00","studentCount":20,"subject":{"backlogStudents":0,"code":"CS102","id":2,"name":"Databases","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":40,"totalStudents":40}},{"backlogStudentCount":0,"endTime":"17:00:00","examDate":"2030-01-08","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.one@example.com","examHead":true,"id":1,"invigilator":false,"name":"Head One","workloadCapacity":10},"faculty":{"availabilitySlots":["2030-01-07T09:00:00","2030-01-07T10:00:00","2030-01-07T11:00:00"],"currentWorkload":4,"department":"CSE","email":"regular.seven@example.com","examHead":false,"id":7,"invigilator":false,"name":"Regular Seven","workloadCapacity":5},"id":4,"morningSlot":false,"regularStudentCount":20,"reportingTime":"13:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"REGULAR","startTime":"14:00:00","studentCount":20,"subject":{"backlogStudents":0,"code":"CS102","id":2,"name":"Databases","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":40,"totalStudents":40}},{"backlogStudentCount":0,"endTime":"12:00:00","examDate":"2030-02-05","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.one@example.com","examHead":true,"id":1,"invigilator":false,"name":"Head One","workloadCapacity":10},"faculty":{"availabilitySlots":[],"currentWorkload":5,"department":"CSE","email":"invigilator.six@example.com","examHead":false,"id":6,"invigilator":true,"name":"Invigilator Six","workloadCapacity":10},"id":8,"morningSlot":true,"regularStudentCount":20,"reportingTime":"08:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"REGULAR","startTime":"09:00:00","studentCount":20,"subject":{"backlogStudents":0,"code":"CS102","id":2,"name":"Databases","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":40,"totalStudents":40}},{"backlogStudentCount":0,"endTime":"17:00:00","examDate":"2030-02-05","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.two@example.com","examHead":true,"id":2,"invigilator":false,"name":"Head Two","workloadCapacity":10},"faculty":{"availabilitySlots":["2030-01-07T09:00:00","2030-01-07T10:00:00","2030-01-07T11:00:00"],"currentWorkload":4,"department":"CSE","email":"regular.seven@example.com","examHead":false,"id":7,"invigilator":false,"name":"Regular Seven","workloadCapacity":5},"id":9,"morningSlot":false,"regularStudentCount":20,"reportingTime":"13:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"REGULAR","startTime":"14:00:00","studentCount":20,"subject":{"backlogStudents":0,"code":"CS102","id":2,"name":"Databases","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":40,"totalStudents":40}}]
+
+### GET /api/exams/upcoming
+status: 200
+content-type: application/json
+body: []
+
+### GET /api/exams/upcoming/subject/Algorithms
+status: 200
+content-type: application/json
+body: []
+
+### GET /api/exams/stats
+status: 200
+content-type: application/json
+body: {"pendingExams":0,"timestamp":"<TODAY>","totalExams":11,"upcomingExams":0}
+
+### GET /api/exams/stats/range?startDate=2030-01-01&endDate=2030-12-31
+status: 200
+content-type: application/json
+body: {"endDate":"2030-12-31","exams":[{"backlogStudentCount":5,"endTime":"12:00:00","examDate":"2030-01-07","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.two@example.com","examHead":true,"id":2,"invigilator":false,"name":"Head Two","workloadCapacity":10},"faculty":{"availabilitySlots":["2030-01-07T09:00:00","2030-01-07T10:00:00","2030-01-07T11:00:00"],"currentWorkload":4,"department":"CSE","email":"regular.seven@example.com","examHead":false,"id":7,"invigilator":false,"name":"Regular Seven","workloadCapacity":5},"id":1,"morningSlot":true,"regularStudentCount":30,"reportingTime":"08:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"MIXED","startTime":"09:00:00","studentCount":35,"subject":{"backlogStudents":10,"code":"CS101","id":1,"name":"Algorithms","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":60,"totalStudents":70}},{"backlogStudentCount":10,"endTime":"17:00:00","examDate":"2030-01-07","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.one@example.com","examHead":true,"id":1,"invigilator":false,"name":"Head One","workloadCapacity":10},"faculty":{"availabilitySlots":[],"currentWorkload":6,"department":"CSE","email":"invigilator.three@example.com","examHead":false,"id":3,"invigilator":true,"name":"Invigilator Three","workloadCapacity":10},"id":2,"morningSlot":false,"regularStudentCount":60,"reportingTime":"13:30:00","room":{"available":true,"building":"A","floor":"1","id":1,"roomNumber":"A101","roomType":"Classroom","seatingCapacity":40},"slotType":"MIXED","startTime":"14:00:00","studentCount":35,"subject":{"backlogStudents":10,"code":"CS101","id":1,"name":"Algorithms","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":60,"totalStudents":70}},{"backlogStudentCount":0,"endTime":"12:00:00","examDate":"2030-01-08","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.two@example.com","examHead":true,"id":2,"invigilator":false,"name":"Head Two","workloadCapacity":10},"faculty":{"availabilitySlots":[],"currentWorkload":5,"department":"CSE","email":"invigilator.five@example.com","examHead":false,"id":5,"invigilator":true,"name":"Invigilator Five","workloadCapacity":10},"id":3,"morningSlot":true,"regularStudentCount":20,"reportingTime":"08:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"REGULAR","startTime":"09:00:00","studentCount":20,"subject":{"backlogStudents":0,"code":"CS102","id":2,"name":"Databases","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":40,"totalStudents":40}},{"backlogStudentCount":0,"endTime":"17:00:00","examDate":"2030-01-08","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.one@example.com","examHead":true,"id":1,"invigilator":false,"name":"Head One","workloadCapacity":10},"faculty":{"availabilitySlots":["2030-01-07T09:00:00","2030-01-07T10:00:00","2030-01-07T11:00:00"],"currentWorkload":4,"department":"CSE","email":"regular.seven@example.com","examHead":false,"id":7,"invigilator":false,"name":"Regular Seven","workloadCapacity":5},"id":4,"morningSlot":false,"regularStudentCount":20,"reportingTime":"13:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"REGULAR","startTime":"14:00:00","studentCount":20,"subject":{"backlogStudents":0,"code":"CS102","id":2,"name":"Databases","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":40,"totalStudents":40}},{"backlogStudentCount":20,"endTime":"12:00:00","examDate":"2030-03-02","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.two@example.com","examHead":true,"id":2,"invigilator":false,"name":"Head Two","workloadCapacity":10},"faculty":{"availabilitySlots":[],"currentWorkload":5,"department":"CSE","email":"invigilator.five@example.com","examHead":false,"id":5,"invigilator":true,"name":"Invigilator Five","workloadCapacity":10},"id":5,"morningSlot":true,"regularStudentCount":0,"reportingTime":"08:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"BACKLOG","startTime":"09:00:00","studentCount":20,"subject":{"backlogStudents":20,"code":"IT201","id":3,"name":"Networks","program":{"code":"it","department":"IT","id":2,"name":"Information Technology"},"regularStudents":0,"totalStudents":20}},{"backlogStudentCount":5,"endTime":"12:00:00","examDate":"2030-02-04","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.one@example.com","examHead":true,"id":1,"invigilator":false,"name":"Head One","workloadCapacity":10},"faculty":{"availabilitySlots":["2030-01-07T09:00:00","2030-01-07T10:00:00","2030-01-07T11:00:00"],"currentWorkload":4,"department":"CSE","email":"regular.seven@example.com","examHead":false,"id":7,"invigilator":false,"name":"Regular Seven","workloadCapacity":5},"id":6,"morningSlot":true,"regularStudentCount":30,"reportingTime":"08:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"MIXED","startTime":"09:00:00","studentCount":35,"subject":{"backlogStudents":10,"code":"CS101","id":1,"name":"Algorithms","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":60,"totalStudents":70}},{"backlogStudentCount":10,"endTime":"17:00:00","examDate":"2030-02-04","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.two@example.com","examHead":true,"id":2,"invigilator":false,"name":"Head Two","workloadCapacity":10},"faculty":{"availabilitySlots":[],"currentWorkload":5,"department":"CSE","email":"invigilator.four@example.com","examHead":false,"id":4,"invigilator":true,"name":"Invigilator Four","workloadCapacity":10},"id":7,"morningSlot":false,"regularStudentCount":60,"reportingTime":"13:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"MIXED","startTime":"14:00:00","studentCount":35,"subject":{"backlogStudents":10,"code":"CS101","id":1,"name":"Algorithms","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":60,"totalStudents":70}},{"backlogStudentCount":0,"endTime":"12:00:00","examDate":"2030-02-05","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.one@example.com","examHead":true,"id":1,"invigilator":false,"name":"Head One","workloadCapacity":10},"faculty":{"availabilitySlots":[],"currentWorkload":5,"department":"CSE","email":"invigilator.six@example.com","examHead":false,"id":6,"invigilator":true,"name":"Invigilator Six","workloadCapacity":10},"id":8,"morningSlot":true,"regularStudentCount":20,"reportingTime":"08:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"REGULAR","startTime":"09:00:00","studentCount":20,"subject":{"backlogStudents":0,"code":"CS102","id":2,"name":"Databases","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":40,"totalStudents":40}},{"backlogStudentCount":0,"endTime":"17:00:00","examDate":"2030-02-05","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.two@example.com","examHead":true,"id":2,"invigilator":false,"name":"Head Two","workloadCapacity":10},"faculty":{"availabilitySlots":["2030-01-07T09:00:00","2030-01-07T10:00:00","2030-01-07T11:00:00"],"currentWorkload":4,"department":"CSE","email":"regular.seven@example.com","examHead":false,"id":7,"invigilator":false,"name":"Regular Seven","workloadCapacity":5},"id":9,"morningSlot":false,"regularStudentCount":20,"reportingTime":"13:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"REGULAR","startTime":"14:00:00","studentCount":20,"subject":{"backlogStudents":0,"code":"CS102","id":2,"name":"Databases","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":40,"totalStudents":40}},{"backlogStudentCount":20,"endTime":"12:00:00","examDate":"2030-02-06","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.one@example.com","examHead":true,"id":1,"invigilator":false,"name":"Head One","workloadCapacity":10},"faculty":{"availabilitySlots":[],"currentWorkload":5,"department":"CSE","email":"invigilator.five@example.com","examHead":false,"id":5,"invigilator":true,"name":"Invigilator Five","workloadCapacity":10},"id":10,"morningSlot":true,"regularStudentCount":0,"reportingTime":"08:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"BACKLOG","startTime":"09:00:00","studentCount":20,"subject":{"backlogStudents":20,"code":"IT201","id":3,"name":"Networks","program":{"code":"it","department":"IT","id":2,"name":"Information Technology"},"regularStudents":0,"totalStudents":20}},{"backlogStudentCount":0,"endTime":"12:00:00","examDate":"2030-01-10","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.two@example.com","examHead":true,"id":2,"invigilator":false,"name":"Head Two","workloadCapacity":10},"faculty":{"availabilitySlots":[],"currentWorkload":5,"department":"CSE","email":"invigilator.six@example.com","examHead":false,"id":6,"invigilator":true,"name":"Invigilator Six","workloadCapacity":10},"id":11,"morningSlot":false,"regularStudentCount":0,"reportingTime":null,"room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":null,"startTime":"09:00:00","studentCount":10,"subject":{"backlogStudents":20,"code":"IT201","id":3,"name":"Networks","program":{"code":"it","department":"IT","id":2,"name":"Information Technology"},"regularStudents":0,"totalStudents":20}}],"startDate":"2030-01-01","totalExamsInRange":11}
+
+### GET /api/exams/stats/range?startDate=2030-12-31&endDate=2030-01-01
+status: 400
+error: End date cannot be before start date
+
+### GET /api/exams/schedule/1
+status: 200
+content-type: application/json
+body: [{"backlogStudentCount":5,"endTime":"12:00:00","examDate":"2030-01-07","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.two@example.com","examHead":true,"id":2,"invigilator":false,"name":"Head Two","workloadCapacity":10},"faculty":{"availabilitySlots":["2030-01-07T09:00:00","2030-01-07T10:00:00","2030-01-07T11:00:00"],"currentWorkload":4,"department":"CSE","email":"regular.seven@example.com","examHead":false,"id":7,"invigilator":false,"name":"Regular Seven","workloadCapacity":5},"id":1,"morningSlot":true,"regularStudentCount":30,"reportingTime":"08:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"MIXED","startTime":"09:00:00","studentCount":35,"subject":{"backlogStudents":10,"code":"CS101","id":1,"name":"Algorithms","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":60,"totalStudents":70}},{"backlogStudentCount":10,"endTime":"17:00:00","examDate":"2030-01-07","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.one@example.com","examHead":true,"id":1,"invigilator":false,"name":"Head One","workloadCapacity":10},"faculty":{"availabilitySlots":[],"currentWorkload":6,"department":"CSE","email":"invigilator.three@example.com","examHead":false,"id":3,"invigilator":true,"name":"Invigilator Three","workloadCapacity":10},"id":2,"morningSlot":false,"regularStudentCount":60,"reportingTime":"13:30:00","room":{"available":true,"building":"A","floor":"1","id":1,"roomNumber":"A101","roomType":"Classroom","seatingCapacity":40},"slotType":"MIXED","startTime":"14:00:00","studentCount":35,"subject":{"backlogStudents":10,"code":"CS101","id":1,"name":"Algorithms","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":60,"totalStudents":70}},{"backlogStudentCount":0,"endTime":"12:00:00","examDate":"2030-01-08","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.two@example.com","examHead":true,"id":2,"invigilator":false,"name":"Head Two","workloadCapacity":10},"faculty":{"availabilitySlots":[],"currentWorkload":5,"department":"CSE","email":"invigilator.five@example.com","examHead":false,"id":5,"invigilator":true,"name":"Invigilator Five","workloadCapacity":10},"id":3,"morningSlot":true,"regularStudentCount":20,"reportingTime":"08:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"REGULAR","startTime":"09:00:00","studentCount":20,"subject":{"backlogStudents":0,"code":"CS102","id":2,"name":"Databases","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":40,"totalStudents":40}},{"backlogStudentCount":0,"endTime":"17:00:00","examDate":"2030-01-08","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.one@example.com","examHead":true,"id":1,"invigilator":false,"name":"Head One","workloadCapacity":10},"faculty":{"availabilitySlots":["2030-01-07T09:00:00","2030-01-07T10:00:00","2030-01-07T11:00:00"],"currentWorkload":4,"department":"CSE","email":"regular.seven@example.com","examHead":false,"id":7,"invigilator":false,"name":"Regular Seven","workloadCapacity":5},"id":4,"morningSlot":false,"regularStudentCount":20,"reportingTime":"13:30:00","room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":"REGULAR","startTime":"14:00:00","studentCount":20,"subject":{"backlogStudents":0,"code":"CS102","id":2,"name":"Databases","program":{"code":"cs","department":"CSE","id":1,"name":"Computer Science"},"regularStudents":40,"totalStudents":40}},{"backlogStudentCount":0,"endTime":"12:00:00","examDate":"2030-01-10","examHead":{"availabilitySlots":[],"currentWorkload":7,"department":"CSE","email":"head.two@example.com","examHead":true,"id":2,"invigilator":false,"name":"Head Two","workloadCapacity":10},"faculty":{"availabilitySlots":[],"currentWorkload":5,"department":"CSE","email":"invigilator.six@example.com","examHead":false,"id":6,"invigilator":true,"name":"Invigilator Six","workloadCapacity":10},"id":11,"morningSlot":false,"regularStudentCount":0,"reportingTime":null,"room":{"available":true,"building":"B","floor":"2","id":3,"roomNumber":"B201","roomType":"Classroom","seatingCapacity":35},"slotType":null,"startTime":"09:00:00","studentCount":10,"subject":{"backlogStudents":20,"code":"IT201","id":3,"name":"Networks","program":{"code":"it","department":"IT","id":2,"name":"Information Technology"},"regularStudents":0,"totalStudents":20}}]
+
+### GET /api/exams/schedule/999
+status: 200
+content-type: application/json
+body: []
+
+### GET /api/exams/slots/faculty
+status: 200
+content-type: application/json
+body: [{"endTime":"12:00:00","examDate":"2030-01-07","examHead":{"department":"CSE","id":2,"name":"Head Two"},"faculty":{"department":"CSE","id":7,"name":"Regular Seven","workload":4},"id":1,"invigilators":[{"department":"CSE","id":3,"name":"Invigilator Three"}],"room":"B201","startTime":"09:00:00","subject":"Algorithms"},{"endTime":"17:00:00","examDate":"2030-01-07","examHead":{"department":"CSE","id":1,"name":"Head One"},"faculty":{"department":"CSE","id":3,"name":"Invigilator Three","workload":6},"id":2,"invigilators":[{"department":"CSE","id":4,"name":"Invigilator Four"},{"department":"CSE","id":5,"name":"Invigilator Five"}],"room":"A101","startTime":"14:00:00","subject":"Algorithms"},{"endTime":"12:00:00","examDate":"2030-01-08","examHead":{"department":"CSE","id":2,"name":"Head Two"},"faculty":{"department":"CSE","id":5,"name":"Invigilator Five","workload":5},"id":3,"invigilators":[{"department":"CSE","id":3,"name":"Invigilator Three"}],"room":"B201","startTime":"09:00:00","subject":"Databases"},{"endTime":"17:00:00","examDate":"2030-01-08","examHead":{"department":"CSE","id":1,"name":"Head One"},"faculty":{"department":"CSE","id":7,"name":"Regular Seven","workload":4},"id":4,"invigilators":[{"department":"CSE","id":4,"name":"Invigilator Four"}],"room":"B201","startTime":"14:00:00","subject":"Databases"},{"endTime":"12:00:00","examDate":"2030-03-02","examHead":{"department":"CSE","id":2,"name":"Head Two"},"faculty":{"department":"CSE","id":5,"name":"Invigilator Five","workload":5},"id":5,"invigilators":[{"department":"CSE","id":6,"name":"Invigilator Six"}],"room":"B201","startTime":"09:00:00","subject":"Networks"},{"endTime":"12:00:00","examDate":"2030-02-04","examHead":{"department":"CSE","id":1,"name":"Head One"},"faculty":{"department":"CSE","id":7,"name":"Regular Seven","workload":4},"id":6,"invigilators":[{"department":"CSE","id":3,"name":"Invigilator Three"}],"room":"B201","startTime":"09:00:00","subject":"Algorithms"},{"endTime":"17:00:00","examDate":"2030-02-04","examHead":{"department":"CSE","id":2,"name":"Head Two"},"faculty":{"department":"CSE","id":4,"name":"Invigilator Four","workload":5},"id":7,"invigilators":[{"department":"CSE","id":5,"name":"Invigilator Five"}],"room":"B201","startTime":"14:00:00","subject":"Algorithms"},{"endTime":"12:00:00","examDate":"2030-02-05","examHead":{"department":"CSE","id":1,"name":"Head One"},"faculty":{"department":"CSE","id":6,"name":"Invigilator Six","workload":5},"id":8,"invigilators":[{"department":"CSE","id":3,"name":"Invigilator Three"}],"room":"B201","startTime":"09:00:00","subject":"Databases"},{"endTime":"17:00:00","examDate":"2030-02-05","examHead":{"department":"CSE","id":2,"name":"Head Two"},"faculty":{"department":"CSE","id":7,"name":"Regular Seven","workload":4},"id":9,"invigilators":[{"department":"CSE","id":4,"name":"Invigilator Four"}],"room":"B201","startTime":"14:00:00","subject":"Databases"},{"endTime":"12:00:00","examDate":"2030-02-06","examHead":{"department":"CSE","id":1,"name":"Head One"},"faculty":{"department":"CSE","id":5,"name":"Invigilator Five","workload":5},"id":10,"invigilators":[{"department":"CSE","id":6,"name":"Invigilator Six"}],"room":"B201","startTime":"09:00:00","subject":"Networks"},{"endTime":"12:00:00","examDate":"2030-01-10","examHead":{"department":"CSE","id":2,"name":"Head Two"},"faculty":{"department":"CSE","id":6,"name":"Invigilator Six","workload":5},"id":11,"invigilators":[{"department":"CSE","id":3,"name":"Invigilator Three"}],"room":"B201","startTime":"09:00:00","subject":"Networks"}]
+
+### GET /api/rooms/stats
+status: 200
+content-type: application/json
+body: {"availableRooms":3,"bookedRooms":1,"totalCapacity":235,"totalRooms":4}
+
+### GET /
+status: 200
+forwarded: /WEB-INF/views/index.jsp
+model: Exam Scheduler - Home
+
+### GET /exams
+status: 200
+forwarded: /WEB-INF/views/exams.jsp
+model: Manage Exams
+
+### GET /students
+status: 200
+forwarded: /WEB-INF/views/students.jsp
+model: Manage Students
+
+### GET /rooms
+status: 200
+forwarded: /WEB-INF/views/rooms.jsp
+model: Manage Rooms
+
+### GET /schedule
+status: 200
+forwarded: /WEB-INF/views/schedule.jsp
+model: View Schedule
+
+### OPTIONS /api/rooms (Origin: http://localhost:5173, method: DELETE)
+status: 200
+Access-Control-Allow-Origin: http://localhost:5173
+Access-Control-Allow-Methods: GET,POST,PUT,PATCH,DELETE,OPTIONS
+Access-Control-Allow-Headers: Content-Type
+Access-Control-Allow-Credentials: true
+
+### OPTIONS /api/schedule/generate (Origin: http://localhost:3000, method: POST)
+status: 200
+Access-Control-Allow-Origin: http://localhost:3000
+Access-Control-Allow-Methods: GET,POST,PUT,PATCH,DELETE,OPTIONS
+Access-Control-Allow-Headers: Content-Type
+Access-Control-Allow-Credentials: true
+
+### OPTIONS /api/rooms (Origin: http://example.com, method: GET)
+status: 403
+body: Invalid CORS request
+
+### GET /api/rooms/stats/total-rooms (Origin: http://localhost:5173)
+status: 200
+content-type: application/json
+Access-Control-Allow-Origin: http://localhost:5173
+Access-Control-Allow-Credentials: true
+body: {"totalRooms":4}
+
